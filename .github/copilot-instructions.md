@@ -1,0 +1,12 @@
+# GitHub Copilot Instructions
+
+Read `AGENTS.md` in the repository root for the full architecture guide, coding conventions, and Next.js 16 patterns.
+
+## Key Points
+
+- Next.js 16 App Router with JavaScript (not TypeScript)
+- Tailwind CSS v4 for styling
+- React Compiler enabled — no manual memoization needed
+- `cacheComponents: true` is active — use `'use cache'` directive
+- `middleware` is renamed to `proxy` in v16
+- All request APIs (`cookies()`, `headers()`, `params`, `searchParams`) must be `await`ed
