@@ -4,7 +4,7 @@ Read `AGENTS.md` in the repository root for the full architecture guide, coding 
 
 ## Key Points
 
-- Next.js 16 App Router with JavaScript (not TypeScript)
+- Next.js 16 App Router with TypeScript (strict), Prisma 7 + MySQL
 - Tailwind CSS v4 for styling
 - React Compiler enabled — no manual memoization needed
 - `cacheComponents: true` is active — use `'use cache'` directive

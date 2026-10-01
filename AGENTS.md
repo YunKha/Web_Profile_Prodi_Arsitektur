@@ -4,7 +4,7 @@ This file provides guidance to all AI coding assistants (Claude Code, Cursor, Co
 
 ## Project Overview
 
-Next.js 16.2.9 App Router project using JavaScript (not TypeScript). Styled with Tailwind CSS v4. React Compiler is enabled — components are auto-memoized, do not use `useMemo`, `useCallback`, or `memo`.
+Next.js 16.2.9 App Router project using TypeScript (`strict`). Data layer: Prisma 7 + MySQL 8. Styled with Tailwind CSS v4. React Compiler is enabled — components are auto-memoized, do not use `useMemo`, `useCallback`, or `memo`.
 
 ## Commands
 
@@ -13,6 +13,13 @@ npm run dev        # Dev server (Turbopack, port 3000)
 npm run build      # Production build (Turbopack)
 npm run start      # Production server
 npm run lint       # ESLint flat config (next/core-web-vitals)
+npm run typecheck  # tsc --noEmit
+
+npm run db:migrate # prisma migrate dev  (buat & terapkan migrasi dari schema.prisma)
+npm run db:deploy  # prisma migrate deploy (production)
+npm run db:seed    # data awal (butuh SEED_ADMIN_EMAIL & SEED_ADMIN_PASSWORD di .env)
+npm run db:studio  # Prisma Studio
+npm run db:reset   # drop + migrate + seed ulang (HANYA dev)
 ```
 
 No test framework is installed yet.
@@ -22,16 +29,25 @@ No test framework is installed yet.
 ```
 src/
   app/                  # Routes (App Router)
-    layout.js           # Root layout (required: <html> + <body>)
-    page.js             # Home route
+    layout.tsx           # Root layout (required: <html> + <body>)
+    page.tsx             # Home route
     globals.css         # Tailwind v4 + theme tokens
     (group)/            # Route groups — organize without affecting URL
     api/                # Route Handlers (only when Server Actions won't work)
   components/
     ui/                 # Reusable UI primitives (Button, Input, Card)
     layouts/            # Layout pieces (Header, Footer, Sidebar)
-  lib/                  # Shared utilities, constants, DB clients
+  lib/
+    db/client.ts        # `db` — PrismaClient singleton (server-only)
+    db/create-client.ts # Pembuat client + driver adapter MySQL (dipakai app & seed)
+  generated/prisma/     # Prisma Client hasil generate (gitignored, dibuat saat postinstall)
   hooks/                # Custom React hooks (client-side only)
+prisma/
+  schema.prisma         # Sumber kebenaran skema database
+  migrations/           # Riwayat migrasi (COMMIT ke git)
+  seed.ts               # Data awal
+prisma.config.ts        # Konfigurasi Prisma CLI (datasource URL, seed)
+docs/PRD.md             # Product Requirements Document
 public/                 # Static assets (images, fonts)
 ```
 
@@ -39,6 +55,19 @@ Conventions:
 - Colocate components close to the routes that use them. Move to `src/components/` only when shared across routes.
 - Use route groups `(group)` to organize routes without affecting URLs.
 - Path alias: `@/*` maps to `./src/*`.
+
+## Database (Prisma 7 + MySQL)
+
+Skema lengkap ada di `prisma/schema.prisma` (30 tabel, sesuai `docs/PRD.md` §6). Tabel/kolom snake_case lewat `@@map`/`@map`; model & field di kode camelCase.
+
+- **Setup lokal:** salin `.env.example` → `.env`, isi `DATABASE_URL`, lalu `npm run db:migrate` dan `npm run db:seed`.
+- **Mengubah skema:** edit `schema.prisma` → `npm run db:migrate -- --name <nama>` → commit folder `prisma/migrations/`. Jangan edit migrasi yang sudah diterapkan.
+- **Prisma 7:** URL database ada di `prisma.config.ts`, bukan di `schema.prisma`. Koneksi runtime memakai driver adapter (`@prisma/adapter-mariadb`) di `src/lib/db/create-client.ts`. Client di-generate ke `src/generated/prisma` (impor dari `.../client`, bukan `@prisma/client`).
+- **Pakai `db` hanya di server** (Server Component, Server Action, Route Handler). `lib/db/client.ts` mengimpor `server-only` sehingga build gagal bila terbawa ke Client Component.
+- **Serialisasi ke Client Component:** `Decimal` (kolom `lat`/`lng`) dan `Date` tidak aman dilempar sebagai props; ubah ke `number`/string ISO dulu. ID memakai `Int` (bukan `BigInt`) agar bisa diserialisasi.
+- **Cache:** bungkus query baca dengan `'use cache'` + `cacheTag('<entitas>')`, dan panggil `updateTag('<entitas>')` di Server Action yang menulis.
+- **Soft publish:** entitas editorial punya `status` (`draft`/`published`); halaman publik selalu filter `status: 'published'`.
+- Seed berisi data **contoh** dari desain Figma (dosen, nomor SK, dll.) dan aman dijalankan ulang.
 
 ## Server vs Client Components
 
@@ -249,10 +278,10 @@ export function PostForm() {
 
 ## Proxy (Renamed from Middleware)
 
-Next.js 16 renamed `middleware` to `proxy`. File: `src/proxy.js`.
+Next.js 16 renamed `middleware` to `proxy`. File: `src/proxy.ts`.
 
 ```js
-// src/proxy.js
+// src/proxy.ts
 import { NextResponse } from 'next/server'
 
 export function proxy(request) {
@@ -282,15 +311,15 @@ export const config = {
 
 | File | Purpose |
 |------|---------|
-| `layout.js` | Shared UI for a segment, persists across navigation |
-| `page.js` | Unique UI for a route, makes the route accessible |
-| `loading.js` | Loading UI (Suspense fallback for the segment) |
-| `error.js` | Error UI (must be `'use client'`) |
-| `not-found.js` | 404 UI |
-| `template.js` | Like layout but re-renders on navigation |
-| `default.js` | Fallback for parallel routes (required in v16) |
-| `proxy.js` | Request interception (renamed from middleware) |
-| `route.js` | API endpoint (Route Handler) |
+| `layout.tsx` | Shared UI for a segment, persists across navigation |
+| `page.tsx` | Unique UI for a route, makes the route accessible |
+| `loading.tsx` | Loading UI (Suspense fallback for the segment) |
+| `error.tsx` | Error UI (must be `'use client'`) |
+| `not-found.tsx` | 404 UI |
+| `template.tsx` | Like layout but re-renders on navigation |
+| `default.tsx` | Fallback for parallel routes (required in v16) |
+| `proxy.ts` | Request interception (renamed from middleware) |
+| `route.ts` | API endpoint (Route Handler) |
 
 Component hierarchy per segment: `layout > template > error > loading > not-found > page`
 
@@ -299,7 +328,7 @@ Component hierarchy per segment: `layout > template > error > loading > not-foun
 1. **Async request APIs** — `cookies()`, `headers()`, `params`, `searchParams` all return Promises. Always `await` them.
 2. **`middleware` → `proxy`** — file and export renamed. Edge runtime removed from proxy.
 3. **`revalidateTag` signature** — requires second argument: `revalidateTag('tag', 'hours')`
-4. **Parallel routes** — all slots require explicit `default.js` files
+4. **Parallel routes** — all slots require explicit `default.tsx` files
 5. **`next lint` removed** — use `npm run lint` (ESLint directly)
 6. **Turbopack is default** — custom webpack configs need `--webpack` flag to build
 7. **`fetch` not cached by default** — use `'use cache'` explicitly

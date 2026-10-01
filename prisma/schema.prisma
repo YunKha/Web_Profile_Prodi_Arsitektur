@@ -1,0 +1,587 @@
+// Skema database website Prodi Arsitektur UNTAD (MySQL 8).
+// Sumber: docs/PRD.md §6. Tabel & kolom memakai snake_case lewat @@map/@map.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ───────────────────────── Enum ─────────────────────────
+
+enum Role {
+  admin
+  editor
+}
+
+enum ContentStatus {
+  draft
+  published
+}
+
+enum StaffType {
+  dosen
+  tendik
+}
+
+enum Degree {
+  S1
+  S2
+  S3
+}
+
+enum AccreditationDocType {
+  sertifikat
+  lkps
+  led
+}
+
+enum CourseDocType {
+  rps
+  kurikulum
+}
+
+enum ProgramKind {
+  akademik
+  nonakademik
+}
+
+enum AchievementLevel {
+  lokal
+  nasional
+  internasional
+}
+
+enum ServiceKind {
+  dosen
+  mahasiswa
+}
+
+// ───────────────────────── Inti & CMS ─────────────────────────
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String    @db.VarChar(150)
+  email        String    @unique @db.VarChar(190)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  role         Role      @default(editor)
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  uploads   Media[]
+  news      News[]
+  auditLogs AuditLog[]
+
+  @@map("users")
+}
+
+model Media {
+  id           Int      @id @default(autoincrement())
+  path         String   @unique @db.VarChar(500)
+  mime         String   @db.VarChar(100)
+  sizeBytes    Int      @map("size_bytes")
+  width        Int?
+  height       Int?
+  altText      String?  @map("alt_text") @db.VarChar(255)
+  uploadedById Int?     @map("uploaded_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  uploadedBy User? @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  pageBlocks           PageBlock[]
+  accreditationDocs    AccreditationDocument[]
+  lecturers            Lecturer[]
+  facilityImages       FacilityImage[]
+  courseDocuments      CourseDocument[]
+  documents            Document[]
+  programs             Program[]
+  organizations        Organization[]
+  achievements         Achievement[]
+  alumni               Alumnus[]
+  communityServices    CommunityService[]
+  communityServiceImgs CommunityServiceImage[]
+  partnerships         Partnership[]
+  news                 News[]
+
+  @@map("media")
+}
+
+/// Pengaturan situs: kontak, sosial media, statistik beranda, tautan footer.
+model SiteSetting {
+  key       String   @id @db.VarChar(100)
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+/// Blok teks editorial per halaman (sejarah, visi, intro kegiatan, tahapan TA, dll.).
+model PageBlock {
+  id        Int     @id @default(autoincrement())
+  pageKey   String  @map("page_key") @db.VarChar(80)
+  blockKey  String  @map("block_key") @db.VarChar(80)
+  title     String? @db.VarChar(255)
+  body      String? @db.Text
+  imageId   Int?    @map("image_id")
+  sortOrder Int     @default(0) @map("sort_order")
+
+  image Media? @relation(fields: [imageId], references: [id], onDelete: SetNull)
+
+  @@unique([pageKey, blockKey])
+  @@map("page_blocks")
+}
+
+model MissionItem {
+  id        Int    @id @default(autoincrement())
+  title     String @db.VarChar(150)
+  body      String @db.Text
+  sortOrder Int    @default(0) @map("sort_order")
+
+  @@map("mission_items")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?     @map("user_id")
+  action    String   @db.VarChar(50)
+  entity    String   @db.VarChar(80)
+  entityId  String?  @map("entity_id") @db.VarChar(40)
+  diff      Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ───────────────────────── Profil ─────────────────────────
+
+model Accreditation {
+  id        Int      @id @default(autoincrement())
+  agency    String   @db.VarChar(200)
+  skNumber  String   @map("sk_number") @db.VarChar(120)
+  rank      String   @db.VarChar(40)
+  validFrom DateTime @map("valid_from") @db.Date
+  validTo   DateTime @map("valid_to") @db.Date
+  isCurrent Boolean  @default(false) @map("is_current")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  documents AccreditationDocument[]
+
+  @@index([isCurrent])
+  @@map("accreditations")
+}
+
+model AccreditationDocument {
+  id              Int                  @id @default(autoincrement())
+  accreditationId Int                  @map("accreditation_id")
+  type            AccreditationDocType
+  mediaId         Int                  @map("media_id")
+
+  accreditation Accreditation @relation(fields: [accreditationId], references: [id], onDelete: Cascade)
+  media         Media         @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@unique([accreditationId, type])
+  @@map("accreditation_documents")
+}
+
+model Lecturer {
+  id             Int           @id @default(autoincrement())
+  slug           String        @unique @db.VarChar(160)
+  fullName       String        @map("full_name") @db.VarChar(200)
+  frontTitle     String?       @map("front_title") @db.VarChar(60)
+  backTitle      String?       @map("back_title") @db.VarChar(80)
+  staffType      StaffType     @default(dosen) @map("staff_type")
+  structuralRole String?       @map("structural_role") @db.VarChar(120)
+  academicRank   String?       @map("academic_rank") @db.VarChar(80)
+  civilRank      String?       @map("civil_rank") @db.VarChar(80)
+  studyProgram   String?       @map("study_program") @db.VarChar(120)
+  /// Tahun mulai bekerja. "Masa kerja" dihitung di aplikasi, tidak disimpan.
+  startYear      Int?          @map("start_year") @db.SmallInt
+  expertise      String?       @db.VarChar(255)
+  photoId        Int?          @map("photo_id")
+  email          String?       @db.VarChar(190)
+  nidn           String?       @db.VarChar(30)
+  nuptk          String?       @db.VarChar(30)
+  sintaId        String?       @map("sinta_id") @db.VarChar(40)
+  scopusId       String?       @map("scopus_id") @db.VarChar(40)
+  orcidId        String?       @map("orcid_id") @db.VarChar(40)
+  sintaUrl       String?       @map("sinta_url") @db.VarChar(500)
+  scholarUrl     String?       @map("scholar_url") @db.VarChar(500)
+  websiteUrl     String?       @map("website_url") @db.VarChar(500)
+  isActive       Boolean       @default(true) @map("is_active")
+  sortOrder      Int           @default(0) @map("sort_order")
+  status         ContentStatus @default(draft)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  photo Media? @relation(fields: [photoId], references: [id], onDelete: SetNull)
+
+  education  LecturerEducation[]
+  advisories AchievementAdvisor[]
+  research   ResearchAuthor[]
+
+  @@index([status, sortOrder])
+  @@fulltext([fullName, expertise])
+  @@map("lecturers")
+}
+
+model LecturerEducation {
+  id          Int    @id @default(autoincrement())
+  lecturerId  Int    @map("lecturer_id")
+  degree      Degree
+  major       String @db.VarChar(150)
+  institution String @db.VarChar(200)
+  gradYear    Int    @map("grad_year") @db.SmallInt
+
+  lecturer Lecturer @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+
+  @@index([lecturerId])
+  @@map("lecturer_education")
+}
+
+// ───────────────────────── Fasilitas ─────────────────────────
+
+model Facility {
+  id        Int           @id @default(autoincrement())
+  slug      String        @unique @db.VarChar(120)
+  name      String        @db.VarChar(150)
+  summary   String?       @db.VarChar(500)
+  body      String?       @db.Text
+  capacity  Int?
+  sortOrder Int           @default(0) @map("sort_order")
+  status    ContentStatus @default(draft)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  features FacilityFeature[]
+  images   FacilityImage[]
+
+  @@index([status, sortOrder])
+  @@map("facilities")
+}
+
+model FacilityFeature {
+  id          Int     @id @default(autoincrement())
+  facilityId  Int     @map("facility_id")
+  icon        String? @db.VarChar(60)
+  title       String  @db.VarChar(200)
+  description String? @db.VarChar(500)
+  sortOrder   Int     @default(0) @map("sort_order")
+
+  facility Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@index([facilityId])
+  @@map("facility_features")
+}
+
+model FacilityImage {
+  id         Int     @id @default(autoincrement())
+  facilityId Int     @map("facility_id")
+  mediaId    Int     @map("media_id")
+  caption    String? @db.VarChar(255)
+  sortOrder  Int     @default(0) @map("sort_order")
+
+  facility Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@index([facilityId])
+  @@map("facility_images")
+}
+
+// ───────────────────────── Akademik ─────────────────────────
+
+model Course {
+  id          Int           @id @default(autoincrement())
+  code        String        @unique @db.VarChar(20)
+  name        String        @db.VarChar(200)
+  semester    Int           @db.TinyInt
+  description String?       @db.Text
+  credits     Int?          @db.TinyInt
+  sortOrder   Int           @default(0) @map("sort_order")
+  status      ContentStatus @default(draft)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  documents CourseDocument[]
+
+  @@index([semester, code])
+  @@fulltext([code, name])
+  @@map("courses")
+}
+
+model CourseDocument {
+  id           Int           @id @default(autoincrement())
+  courseId     Int           @map("course_id")
+  type         CourseDocType
+  mediaId      Int           @map("media_id")
+  academicYear String?       @map("academic_year") @db.VarChar(9)
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  media  Media  @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@index([courseId, type])
+  @@map("course_documents")
+}
+
+/// Dokumen umum bernama kunci, mis. "buku-panduan-ta".
+model Document {
+  id      Int    @id @default(autoincrement())
+  key     String @unique @db.VarChar(80)
+  title   String @db.VarChar(200)
+  mediaId Int    @map("media_id")
+
+  media Media @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@map("documents")
+}
+
+// ───────────────────────── Mahasiswa ─────────────────────────
+
+/// Kartu program: "Program Unggulan" (akademik) & "Program Kemahasiswaan" (nonakademik).
+model Program {
+  id        Int           @id @default(autoincrement())
+  kind      ProgramKind
+  slug      String        @unique @db.VarChar(120)
+  title     String        @db.VarChar(200)
+  summary   String?       @db.VarChar(500)
+  body      String?       @db.Text
+  imageId   Int?          @map("image_id")
+  sortOrder Int           @default(0) @map("sort_order")
+  status    ContentStatus @default(draft)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  image Media? @relation(fields: [imageId], references: [id], onDelete: SetNull)
+
+  @@index([kind, status, sortOrder])
+  @@map("programs")
+}
+
+/// Lembaga kemahasiswaan. Struktur halaman belum diverifikasi terhadap Figma.
+model Organization {
+  id           Int     @id @default(autoincrement())
+  name         String  @db.VarChar(200)
+  abbreviation String? @db.VarChar(30)
+  description  String? @db.Text
+  logoId       Int?    @map("logo_id")
+  sortOrder    Int     @default(0) @map("sort_order")
+
+  logo Media? @relation(fields: [logoId], references: [id], onDelete: SetNull)
+
+  @@map("organizations")
+}
+
+model Achievement {
+  id              Int              @id @default(autoincrement())
+  slug            String           @unique @db.VarChar(200)
+  title           String           @db.VarChar(255)
+  studentName     String           @map("student_name") @db.VarChar(200)
+  nim             String?          @db.VarChar(30)
+  cohortYear      Int?             @map("cohort_year") @db.SmallInt
+  achievementYear Int              @map("achievement_year") @db.SmallInt
+  level           AchievementLevel @default(nasional)
+  category        String?          @db.VarChar(100)
+  summary         String?          @db.VarChar(500)
+  body            String?          @db.Text
+  competitionInfo String?          @map("competition_info") @db.Text
+  concept         String?          @db.Text
+  coverId         Int?             @map("cover_id")
+  status          ContentStatus    @default(draft)
+  publishedAt     DateTime?        @map("published_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  cover    Media?               @relation(fields: [coverId], references: [id], onDelete: SetNull)
+  advisors AchievementAdvisor[]
+
+  @@index([status, publishedAt])
+  @@map("achievements")
+}
+
+model AchievementAdvisor {
+  achievementId Int @map("achievement_id")
+  lecturerId    Int @map("lecturer_id")
+
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  lecturer    Lecturer    @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+
+  @@id([achievementId, lecturerId])
+  @@map("achievement_advisors")
+}
+
+model Alumnus {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(200)
+  gradYear    Int?          @map("grad_year") @db.SmallInt
+  jobTitle    String?       @map("job_title") @db.VarChar(150)
+  company     String?       @db.VarChar(200)
+  testimonial String?       @db.Text
+  photoId     Int?          @map("photo_id")
+  status      ContentStatus @default(draft)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  photo Media? @relation(fields: [photoId], references: [id], onDelete: SetNull)
+
+  @@index([status, gradYear])
+  @@map("alumni")
+}
+
+// ───────────────────────── Penelitian, Pengabdian, Kerja sama ─────────────────────────
+
+model Research {
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique @db.VarChar(220)
+  title       String        @db.VarChar(400)
+  abstract    String?       @db.Text
+  year        Int?          @db.SmallInt
+  scheme      String?       @db.VarChar(150)
+  externalUrl String?       @map("external_url") @db.VarChar(500)
+  status      ContentStatus @default(draft)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  authors ResearchAuthor[]
+
+  @@index([status, year])
+  @@fulltext([title])
+  @@map("research")
+}
+
+model ResearchAuthor {
+  researchId  Int @map("research_id")
+  lecturerId  Int @map("lecturer_id")
+  authorOrder Int @default(0) @map("author_order")
+
+  research Research @relation(fields: [researchId], references: [id], onDelete: Cascade)
+  lecturer Lecturer @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+
+  @@id([researchId, lecturerId])
+  @@map("research_authors")
+}
+
+model CommunityService {
+  id           Int           @id @default(autoincrement())
+  slug         String        @unique @db.VarChar(220)
+  kind         ServiceKind
+  title        String        @db.VarChar(300)
+  summary      String?       @db.VarChar(500)
+  body         String?       @db.Text
+  locationName String?       @map("location_name") @db.VarChar(200)
+  lat          Decimal?      @db.Decimal(9, 6)
+  lng          Decimal?      @db.Decimal(9, 6)
+  year         Int?          @db.SmallInt
+  coverId      Int?          @map("cover_id")
+  status       ContentStatus @default(draft)
+  publishedAt  DateTime?     @map("published_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  cover  Media?                  @relation(fields: [coverId], references: [id], onDelete: SetNull)
+  images CommunityServiceImage[]
+
+  @@index([kind, status, publishedAt])
+  @@map("community_services")
+}
+
+model CommunityServiceImage {
+  id        Int     @id @default(autoincrement())
+  serviceId Int     @map("service_id")
+  mediaId   Int     @map("media_id")
+  caption   String? @db.VarChar(255)
+  sortOrder Int     @default(0) @map("sort_order")
+
+  service CommunityService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  media   Media            @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@index([serviceId])
+  @@map("community_service_images")
+}
+
+/// Mitra kerja sama. Struktur halaman belum diverifikasi terhadap Figma.
+model Partnership {
+  id          Int           @id @default(autoincrement())
+  partnerName String        @map("partner_name") @db.VarChar(250)
+  partnerType String?       @map("partner_type") @db.VarChar(80)
+  scope       String?       @db.Text
+  startDate   DateTime?     @map("start_date") @db.Date
+  endDate     DateTime?     @map("end_date") @db.Date
+  logoId      Int?          @map("logo_id")
+  url         String?       @db.VarChar(500)
+  status      ContentStatus @default(draft)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  logo Media? @relation(fields: [logoId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@map("partnerships")
+}
+
+// ───────────────────────── Berita ─────────────────────────
+
+model News {
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique @db.VarChar(220)
+  title       String        @db.VarChar(300)
+  excerpt     String?       @db.VarChar(600)
+  /// HTML tersanitasi dari editor teks kaya.
+  body        String        @db.LongText
+  coverId     Int?          @map("cover_id")
+  categoryId  Int?          @map("category_id")
+  authorId    Int?          @map("author_id")
+  status      ContentStatus @default(draft)
+  publishedAt DateTime?     @map("published_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  cover    Media?        @relation(fields: [coverId], references: [id], onDelete: SetNull)
+  category NewsCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  author   User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  tags     NewsTag[]
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@fulltext([title, excerpt])
+  @@map("news")
+}
+
+model NewsCategory {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(100)
+  slug String @unique @db.VarChar(120)
+
+  news News[]
+
+  @@map("news_categories")
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(80)
+  slug String @unique @db.VarChar(100)
+
+  news NewsTag[]
+
+  @@map("tags")
+}
+
+model NewsTag {
+  newsId Int @map("news_id")
+  tagId  Int @map("tag_id")
+
+  news News @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([newsId, tagId])
+  @@map("news_tags")
+}
