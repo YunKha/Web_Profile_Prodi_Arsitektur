@@ -20,35 +20,57 @@ npm run db:deploy  # prisma migrate deploy (production)
 npm run db:seed    # data awal (butuh SEED_ADMIN_EMAIL & SEED_ADMIN_PASSWORD di .env)
 npm run db:studio  # Prisma Studio
 npm run db:reset   # drop + migrate + seed ulang (HANYA dev)
+
+npm run test:e2e   # Playwright (folder e2e/), memakai Edge terpasang; butuh DB ber-seed & akun admin di .env
 ```
 
-No test framework is installed yet.
+Lint wajib bersih. Aturan React Compiler `react-hooks/purity` menolak `Date.now()`/`new Date()` di render; untuk nilai per-request di halaman admin pakai `newFormKey()`/`thisYear()` dari `src/lib/admin/request.ts`, dan di halaman publik hitung waktu di dalam fungsi `'use cache'`.
 
 ## Project Structure
 
 ```
 src/
-  app/                  # Routes (App Router)
-    layout.tsx           # Root layout (required: <html> + <body>)
-    page.tsx             # Home route
-    globals.css         # Tailwind v4 + theme tokens
-    (group)/            # Route groups — organize without affecting URL
-    api/                # Route Handlers (only when Server Actions won't work)
+  app/
+    layout.tsx                 # Root layout: <html>, font Hanken Grotesk + Inter
+    globals.css                # Tailwind v4 + token warna Figma (primary #af640e, dll.)
+    not-found.tsx, global-error.tsx, sitemap.ts, robots.ts
+    (public)/                  # Situs publik; layout = SiteHeader + SiteFooter
+      page.tsx                 # Beranda
+      profil/ fasilitas/ akademik/ mahasiswa/ penelitian/ pengabdian/ kerja-sama/ berita/
+    admin/
+      login/                   # Halaman + Server Action login (rate limit)
+      (panel)/                 # CMS; layout = sidebar + guard sesi (di dalam Suspense)
+        <modul>/page.tsx       # Daftar (cari, filter status, paginasi)
+        <modul>/baru/page.tsx  # Formulir tambah
+        <modul>/[id]/page.tsx  # Formulir edit
+        <modul>/actions.ts     # Server Actions: Zod → requireUser → mutasi → audit → updateTag → redirect
+        <modul>/form.tsx       # Formulir (Server Component yang menyusun field klien)
+    media/[...path]/route.ts   # Melayani file unggahan dari storage/
+    api/admin/upload/          # Unggah file (dipakai pemilih media)
+    api/auth/logout/           # Logout via POST biasa → navigasi penuh
+    api/views/                 # Penghitung tayang berita/penelitian
   components/
-    ui/                 # Reusable UI primitives (Button, Input, Card)
-    layouts/            # Layout pieces (Header, Footer, Sidebar)
+    ui/                        # Primitif publik: Container, LinkButton, MediaImage, Gallery, Pagination, SearchBox
+    layouts/                   # NavBar, SiteHeader/Footer, PageHero, SubNav, Breadcrumb
+    cards.tsx                  # Kartu berita/prestasi/penelitian/pengabdian/dosen/dokumen
+    admin/                     # AdminForm, fields, MediaField/GalleryField, RichTextField, Repeater, MultiSelect, DataTable
   lib/
-    db/client.ts        # `db` — PrismaClient singleton (server-only)
-    db/create-client.ts # Pembuat client + driver adapter MySQL (dipakai app & seed)
-  generated/prisma/     # Prisma Client hasil generate (gitignored, dibuat saat postinstall)
-  hooks/                # Custom React hooks (client-side only)
+    db/                        # `db` PrismaClient (server-only) + create-client (dipakai app & seed)
+    queries/                   # Query publik ber-'use cache' + cacheTag per entitas
+    admin/                     # Helper formulir (skema Zod `f.*`), media actions, opsi, label audit
+    auth/                      # Sesi di DB + bcrypt
+    storage.ts                 # Simpan unggahan (cek magic bytes, nama acak)
+    sanitize.ts                # Sanitasi HTML editor teks kaya
+    settings.ts                # Bentuk & default tabel site_settings
+    page-registry.ts           # Blok teks per halaman (dipakai halaman publik & editor "Halaman")
+  generated/prisma/            # Prisma Client hasil generate (gitignored)
+  proxy.ts                     # Redirect optimistis /admin → /admin/login bila tanpa cookie
 prisma/
-  schema.prisma         # Sumber kebenaran skema database
-  migrations/           # Riwayat migrasi (COMMIT ke git)
-  seed.ts               # Data awal
-prisma.config.ts        # Konfigurasi Prisma CLI (datasource URL, seed)
-docs/PRD.md             # Product Requirements Document
-public/                 # Static assets (images, fonts)
+  schema.prisma, migrations/   # Skema & riwayat migrasi (COMMIT ke git)
+  seed.ts, seed-assets/        # Data & foto contoh dari Figma
+e2e/                           # Uji Playwright
+storage/uploads/               # File unggahan (gitignored; cadangkan bersama DB)
+public/images/                 # Logo dan ikon dari Figma
 ```
 
 Conventions:
@@ -58,7 +80,7 @@ Conventions:
 
 ## Database (Prisma 7 + MySQL)
 
-Skema lengkap ada di `prisma/schema.prisma` (30 tabel, sesuai `docs/PRD.md` §6). Tabel/kolom snake_case lewat `@@map`/`@map`; model & field di kode camelCase.
+Skema lengkap ada di `prisma/schema.prisma` (PRD §6 ditambah `sessions`, `login_attempts`, galeri/berkas penelitian & prestasi, field detail dari Figma). Tabel/kolom snake_case lewat `@@map`/`@map`; model & field di kode camelCase.
 
 - **Setup lokal:** salin `.env.example` → `.env`, isi `DATABASE_URL`, lalu `npm run db:migrate` dan `npm run db:seed`.
 - **Mengubah skema:** edit `schema.prisma` → `npm run db:migrate -- --name <nama>` → commit folder `prisma/migrations/`. Jangan edit migrasi yang sudah diterapkan.
@@ -68,6 +90,19 @@ Skema lengkap ada di `prisma/schema.prisma` (30 tabel, sesuai `docs/PRD.md` §6)
 - **Cache:** bungkus query baca dengan `'use cache'` + `cacheTag('<entitas>')`, dan panggil `updateTag('<entitas>')` di Server Action yang menulis.
 - **Soft publish:** entitas editorial punya `status` (`draft`/`published`); halaman publik selalu filter `status: 'published'`.
 - Seed berisi data **contoh** dari desain Figma (dosen, nomor SK, dll.) dan aman dijalankan ulang.
+
+## Konvensi Panel Admin
+
+- **Setiap halaman admin dan Server Action memanggil `requireUser()`/`requireAdmin()` sendiri.** Layout `(panel)` juga menjaga, tetapi layout tidak selalu dirender ulang saat navigasi klien. `proxy.ts` hanya memeriksa keberadaan cookie.
+- **Formulir** memakai `AdminForm`: dikirim lewat transition (bukan atribut `action`) sehingga isian tidak di-reset saat validasi server gagal. Action berbentuk `(id | null, prevState, formData) => FormState` dan di-`bind` dengan id dari halaman.
+- **Field kompleks** (galeri, repeater, multi-select, daftar dokumen) mengirim JSON di input tersembunyi; server memvalidasi ulang dengan `f.json(schema)`.
+- **State UI dipertahankan antar navigasi** (Cache Components memakai React `<Activity>`). Beri formulir `key={formKey}` dari `newFormKey()` agar tidak menampilkan isian lama, dan jangan mengandalkan unmount untuk membersihkan state.
+- **Logout** harus navigasi penuh (POST biasa ke `/api/auth/logout`) agar halaman admin yang tersembunyi di memori klien ikut terbuang.
+- **Setelah mutasi:** `audit()` lalu `updateTag("<entitas>")`; untuk aksi di tempat (tanpa redirect) tambahkan `refresh()`.
+- **Media** disimpan di `storage/uploads` (atau `UPLOAD_DIR`), bukan `public/`, dan dilayani `/media/*`. Tipe file dicek dari isi; SVG tidak diizinkan. Media yang masih dipakai tidak bisa dihapus.
+- **Rich text** disanitasi di server (`sanitizeRichText`) sebelum disimpan; publik merender lewat `<Prose>`.
+- **Rute dinamis publik** memakai `generateStaticParams` dari DB (placeholder bila tabel kosong); bagian yang membaca `searchParams` dibungkus `<Suspense>`.
+- **Teks halaman** (hero, pengantar) berasal dari `page_blocks`; tambahkan blok baru di `src/lib/page-registry.ts` agar otomatis muncul di editor "Halaman".
 
 ## Server vs Client Components
 

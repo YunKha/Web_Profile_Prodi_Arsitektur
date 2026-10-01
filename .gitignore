@@ -44,3 +44,10 @@ next-env.d.ts
 
 # prisma
 /src/generated/prisma
+
+# unggahan media (lokal/production) — cadangkan terpisah
+/storage/
+
+# playwright
+/test-results/
+/playwright-report/

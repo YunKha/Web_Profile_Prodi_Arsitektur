@@ -1,0 +1,43 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="1280" height="1325" viewBox="0 0 1280 1325" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Grid Pattern" clip-path="url(#clip0_0_124)">
+<rect width="1280" height="1325" fill="#FAF8F5"/>
+<line id="Line" y1="-0.5" x2="1280" y2="-0.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_2" y1="-1" x2="1280" y2="-1" stroke="#D4CFC3" stroke-opacity="0.2" stroke-width="2"/>
+<line id="Line_3" y1="109.5" x2="1280" y2="109.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_4" y1="219.5" x2="1280" y2="219.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_5" y1="329.5" x2="1280" y2="329.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_6" y1="439.5" x2="1280" y2="439.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_7" y1="549.5" x2="1280" y2="549.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_8" y1="549" x2="1280" y2="549" stroke="#D4CFC3" stroke-opacity="0.2" stroke-width="2"/>
+<line id="Line_9" y1="659.5" x2="1280" y2="659.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_10" y1="769.5" x2="1280" y2="769.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_11" y1="879.5" x2="1280" y2="879.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_12" y1="989.5" x2="1280" y2="989.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_13" y1="1099.5" x2="1280" y2="1099.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_14" y1="1099" x2="1280" y2="1099" stroke="#D4CFC3" stroke-opacity="0.2" stroke-width="2"/>
+<line id="Line_15" y1="1209.5" x2="1280" y2="1209.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_16" y1="1319.5" x2="1280" y2="1319.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<line id="Line_17" y1="1429.5" x2="1280" y2="1429.5" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector" d="M0 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_2" d="M0 0V1325" stroke="#D4CFC3" stroke-opacity="0.2" stroke-width="2"/>
+<path id="Vector_3" d="M110 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_4" d="M220 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_5" d="M330 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_6" d="M440 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_7" d="M550 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_8" d="M550 0V1325" stroke="#D4CFC3" stroke-opacity="0.2" stroke-width="2"/>
+<path id="Vector_9" d="M660 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_10" d="M770 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_11" d="M880 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_12" d="M990 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_13" d="M1100 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_14" d="M1100 0V1325" stroke="#D4CFC3" stroke-opacity="0.2" stroke-width="2"/>
+<path id="Vector_15" d="M1210 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+<path id="Vector_16" d="M1320 0V1325" stroke="#D4CFC3" stroke-opacity="0.2"/>
+</g>
+<defs>
+<clipPath id="clip0_0_124">
+<rect width="1280" height="1325" fill="white"/>
+</clipPath>
+</defs>
+</svg>

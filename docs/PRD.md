@@ -243,8 +243,17 @@ prisma/schema.prisma, prisma/seed.ts
 ```
 
 ### Perubahan pada repo (status)
-- ✅ **Selesai:** migrasi ke TypeScript strict, alias `@/*`, Prisma 7 + skema 30 tabel, migrasi `init`, seed contoh, `.env.example`, dokumen AGENTS/CLAUDE/Copilot/Cursor diperbarui.
-- ⏳ **Belum:** semua halaman dan komponen UI, autentikasi, unggah file, panel admin.
+- ✅ **Fondasi:** TypeScript strict, alias `@/*`, Prisma 7, migrasi, seed contoh, `.env.example`, dokumen AGENTS/CLAUDE/Copilot/Cursor.
+- ✅ **Situs publik (Oktober 2026):** semua rute §3 termasuk Beranda (frame `halaman beranda` 120:2798) dan Detail Penelitian (167:3249) yang belum tercantum di versi awal PRD; mobile-first; sitemap, robots, RSS berita, JSON-LD (`CollegeOrUniversity`, `Person`, `NewsArticle`, `BreadcrumbList`), halaman 404/error.
+- ✅ **Panel admin:** login dengan sesi DB + rate limit, peran Admin/Editor, CRUD semua entitas, editor teks kaya (Tiptap, HTML disanitasi), pustaka media, galeri berurutan, jadwal terbit berita, editor blok halaman, pengaturan situs, pengguna, audit log.
+- ✅ **Kualitas:** ESLint & `tsc` bersih, `next build` sukses, 7 uji Playwright alur kritis lulus.
+- ⏳ **Belum:** impor massal CSV (AD-09), pencarian global (FR-23), formulir kontak (FR-24), desain resmi mobile (D1) untuk diverifikasi, konten asli pengganti data contoh.
+
+Keputusan teknis yang diambil saat implementasi:
+- **Auth:** sesi sendiri (bukan Auth.js) — tabel `sessions` menyimpan hash SHA-256 token, cookie httpOnly/SameSite=Lax/secure, 7 hari.
+- **Penyimpanan file:** disk lokal `storage/uploads` (konfigurasi `UPLOAD_DIR`), dilayani Route Handler `/media/*`; ganti ke S3-compatible bila hosting tidak punya disk persisten.
+- **Data turunan (D10):** jumlah dosen dihitung dari tabel; peringkat akreditasi dari akreditasi berlaku; jumlah mahasiswa/alumni dan tahun berdiri dari Pengaturan.
+- **Label tab fasilitas (D5):** kolom `nav_label` per fasilitas; judul deskripsi (H2) di kolom `headline`.
 
 Catatan awal (sebelum dikerjakan):
 - Repo masih **JavaScript** dan [AGENTS.md](../AGENTS.md), [CLAUDE.md](../CLAUDE.md), [copilot-instructions.md](../.github/copilot-instructions.md) menyatakan "bukan TypeScript". Perlu migrasi: ubah `.js` → `.tsx`, ganti `jsconfig.json` dengan `tsconfig.json` (sudah ada), dan **perbarui ketiga dokumen itu**.

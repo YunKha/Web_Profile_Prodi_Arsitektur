@@ -1,26 +1,162 @@
 @import "tailwindcss";
 
+/*
+ * Token desain dari Figma "Abala" (ColorPalette 122:3606 + halaman Beranda).
+ * Situs hanya punya tema terang di desain, jadi tidak ada varian gelap.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafaf9;
+  --surface: #ffffff;
+  --text-primary: #1c1917;
+  --text-secondary: #57534e;
+  --text-muted: #6e6e6e;
+  --border: #e7e5e4;
+  --border-warm: #e7e1d8;
+  --accent-brown: #8a6a45;
+
+  --primary-100: #fee5d9;
+  --primary-200: #feb17f;
+  --primary-300: #e48416;
+  --primary-400: #af640e;
+  --primary-500: #7d4607;
+  --primary-600: #4f2a03;
+  --primary-700: #251001;
+  --secondary-400: #be6f13;
+  --secondary-500: #8c500b;
+  --tertiary-300: #d27811;
+  --surface-tint: #8e4e00;
+
+  --grey-100: #ebe9e9;
+  --grey-200: #c5c1bf;
+  --grey-300: #a19a97;
+  --grey-400: #7b7573;
+  --grey-500: #575251;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-ink: var(--text-primary);
+  --color-ink-soft: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-line: var(--border);
+  --color-line-warm: var(--border-warm);
+  --color-brown: var(--accent-brown);
+
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-secondary: var(--secondary-500);
+  --color-secondary-400: var(--secondary-400);
+  --color-tertiary: var(--tertiary-300);
+  --color-tint: var(--surface-tint);
+
+  --color-grey-100: var(--grey-100);
+  --color-grey-200: var(--grey-200);
+  --color-grey-300: var(--grey-300);
+  --color-grey-400: var(--grey-400);
+  --color-grey-500: var(--grey-500);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-hanken);
+
+  --shadow-card: 0 10px 40px -10px rgb(175 100 14 / 0.1);
+  --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-primary);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary-400);
+  outline-offset: 2px;
+}
+
+/* Label kecil kapital berjarak lebar yang dipakai di seluruh desain. */
+@utility eyebrow {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+}
+
+/* Isi HTML dari editor teks kaya (berita, penelitian, pengabdian). */
+@utility prose-content {
+  color: var(--text-secondary);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+
+  & > * + * {
+    margin-top: 1.25em;
+  }
+  & h2 {
+    font-family: var(--font-hanken), sans-serif;
+    font-weight: 800;
+    font-size: 1.75rem;
+    line-height: 1.25;
+    color: var(--text-primary);
+    margin-top: 2em;
+  }
+  & h3 {
+    font-family: var(--font-hanken), sans-serif;
+    font-weight: 700;
+    font-size: 1.375rem;
+    line-height: 1.35;
+    color: var(--text-primary);
+    margin-top: 1.75em;
+  }
+  & a {
+    color: var(--primary-400);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  & strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  & ul,
+  & ol {
+    padding-left: 1.5em;
+  }
+  & ul {
+    list-style: disc;
+  }
+  & ol {
+    list-style: decimal;
+  }
+  & li + li {
+    margin-top: 0.5em;
+  }
+  & li::marker {
+    color: var(--primary-400);
+  }
+  & blockquote {
+    border-left: 4px solid var(--primary-400);
+    background: var(--primary-100);
+    padding: 1.5rem 1.75rem;
+    border-radius: 0 1rem 1rem 0;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+  }
+  & img {
+    border-radius: 1rem;
+    width: 100%;
+    height: auto;
+  }
+  & hr {
+    border-color: var(--border);
+  }
 }

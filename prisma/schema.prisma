@@ -60,6 +60,11 @@ enum ServiceKind {
   mahasiswa
 }
 
+enum ResearchProgress {
+  berlangsung
+  selesai
+}
+
 // ───────────────────────── Inti & CMS ─────────────────────────
 
 model User {
@@ -76,8 +81,38 @@ model User {
   uploads   Media[]
   news      News[]
   auditLogs AuditLog[]
+  sessions  Session[]
 
   @@map("users")
+}
+
+/// Sesi login admin. `id` adalah hash SHA-256 dari token di cookie (token asli tidak disimpan).
+model Session {
+  id        String   @id @db.VarChar(64)
+  userId    Int      @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  ip        String?  @db.VarChar(64)
+  userAgent String?  @map("user_agent") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+/// Catatan percobaan login untuk pembatasan laju (rate limit).
+model LoginAttempt {
+  id        Int      @id @default(autoincrement())
+  email     String   @db.VarChar(190)
+  ip        String   @db.VarChar(64)
+  success   Boolean
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email, createdAt])
+  @@index([ip, createdAt])
+  @@map("login_attempts")
 }
 
 model Media {
@@ -88,6 +123,7 @@ model Media {
   width        Int?
   height       Int?
   altText      String?  @map("alt_text") @db.VarChar(255)
+  originalName String?  @map("original_name") @db.VarChar(255)
   uploadedById Int?     @map("uploaded_by")
   createdAt    DateTime @default(now()) @map("created_at")
 
@@ -101,12 +137,17 @@ model Media {
   documents            Document[]
   programs             Program[]
   organizations        Organization[]
-  achievements         Achievement[]
+  achievements         Achievement[]           @relation("AchievementCover")
+  achievementStudents  Achievement[]           @relation("AchievementStudentPhoto")
+  achievementImages    AchievementImage[]
   alumni               Alumnus[]
   communityServices    CommunityService[]
   communityServiceImgs CommunityServiceImage[]
   partnerships         Partnership[]
   news                 News[]
+  research             Research[]
+  researchImages       ResearchImage[]
+  researchFiles        ResearchFile[]
 
   @@map("media")
 }
@@ -207,6 +248,7 @@ model Lecturer {
   /// Tahun mulai bekerja. "Masa kerja" dihitung di aplikasi, tidak disimpan.
   startYear      Int?          @map("start_year") @db.SmallInt
   expertise      String?       @db.VarChar(255)
+  bio            String?       @db.Text
   photoId        Int?          @map("photo_id")
   email          String?       @db.VarChar(190)
   nidn           String?       @db.VarChar(30)
@@ -254,6 +296,10 @@ model Facility {
   id        Int           @id @default(autoincrement())
   slug      String        @unique @db.VarChar(120)
   name      String        @db.VarChar(150)
+  /// Label pendek untuk tab sub-navigasi, mis. "Lab Model".
+  navLabel  String?       @map("nav_label") @db.VarChar(60)
+  /// Judul bagian deskripsi (H2), mis. "Fasilitas Ujian Representatif & Kondusif".
+  headline  String?       @db.VarChar(200)
   summary   String?       @db.VarChar(500)
   body      String?       @db.Text
   capacity  Int?
@@ -368,12 +414,14 @@ model Program {
 
 /// Lembaga kemahasiswaan. Struktur halaman belum diverifikasi terhadap Figma.
 model Organization {
-  id           Int     @id @default(autoincrement())
-  name         String  @db.VarChar(200)
-  abbreviation String? @db.VarChar(30)
-  description  String? @db.Text
-  logoId       Int?    @map("logo_id")
-  sortOrder    Int     @default(0) @map("sort_order")
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(200)
+  abbreviation String?       @db.VarChar(30)
+  description  String?       @db.Text
+  url          String?       @db.VarChar(500)
+  logoId       Int?          @map("logo_id")
+  sortOrder    Int           @default(0) @map("sort_order")
+  status       ContentStatus @default(published)
 
   logo Media? @relation(fields: [logoId], references: [id], onDelete: SetNull)
 
@@ -394,17 +442,42 @@ model Achievement {
   body            String?          @db.Text
   competitionInfo String?          @map("competition_info") @db.Text
   concept         String?          @db.Text
+  /// Label peringkat singkat, mis. "Juara 1", "Finalis".
+  rankLabel       String?          @map("rank_label") @db.VarChar(60)
+  organizer       String?          @db.VarChar(200)
+  eventLocation   String?          @map("event_location") @db.VarChar(200)
+  eventDate       DateTime?        @map("event_date") @db.Date
+  workTitle       String?          @map("work_title") @db.VarChar(200)
+  isFeatured      Boolean          @default(false) @map("is_featured")
   coverId         Int?             @map("cover_id")
+  studentPhotoId  Int?             @map("student_photo_id")
   status          ContentStatus    @default(draft)
   publishedAt     DateTime?        @map("published_at")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
 
-  cover    Media?               @relation(fields: [coverId], references: [id], onDelete: SetNull)
-  advisors AchievementAdvisor[]
+  cover        Media?               @relation("AchievementCover", fields: [coverId], references: [id], onDelete: SetNull)
+  studentPhoto Media?               @relation("AchievementStudentPhoto", fields: [studentPhotoId], references: [id], onDelete: SetNull)
+  advisors     AchievementAdvisor[]
+  images       AchievementImage[]
 
   @@index([status, publishedAt])
   @@map("achievements")
+}
+
+/// Galeri karya yang dilombakan pada detail prestasi.
+model AchievementImage {
+  id            Int     @id @default(autoincrement())
+  achievementId Int     @map("achievement_id")
+  mediaId       Int     @map("media_id")
+  caption       String? @db.VarChar(255)
+  sortOrder     Int     @default(0) @map("sort_order")
+
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  media       Media       @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@index([achievementId])
+  @@map("achievement_images")
 }
 
 model AchievementAdvisor {
@@ -439,18 +512,32 @@ model Alumnus {
 // ───────────────────────── Penelitian, Pengabdian, Kerja sama ─────────────────────────
 
 model Research {
-  id          Int           @id @default(autoincrement())
-  slug        String        @unique @db.VarChar(220)
-  title       String        @db.VarChar(400)
-  abstract    String?       @db.Text
-  year        Int?          @db.SmallInt
-  scheme      String?       @db.VarChar(150)
-  externalUrl String?       @map("external_url") @db.VarChar(500)
-  status      ContentStatus @default(draft)
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
+  id           Int              @id @default(autoincrement())
+  slug         String           @unique @db.VarChar(220)
+  title        String           @db.VarChar(400)
+  abstract     String?          @db.Text
+  /// HTML tersanitasi: latar belakang, metodologi, temuan.
+  body         String?          @db.LongText
+  year         Int?             @db.SmallInt
+  scheme       String?          @db.VarChar(150)
+  /// Bidang kajian, mis. "Arsitektur Tropis".
+  field        String?          @db.VarChar(120)
+  locationName String?          @map("location_name") @db.VarChar(200)
+  progress     ResearchProgress @default(selesai)
+  /// Nama penulis untuk tampilan bila penulis bukan (hanya) dosen terdaftar.
+  authorsText  String?          @map("authors_text") @db.VarChar(400)
+  externalUrl  String?          @map("external_url") @db.VarChar(500)
+  coverId      Int?             @map("cover_id")
+  isFeatured   Boolean          @default(false) @map("is_featured")
+  viewCount    Int              @default(0) @map("view_count")
+  status       ContentStatus    @default(draft)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
 
+  cover   Media?           @relation(fields: [coverId], references: [id], onDelete: SetNull)
   authors ResearchAuthor[]
+  images  ResearchImage[]
+  files   ResearchFile[]
 
   @@index([status, year])
   @@fulltext([title])
@@ -469,6 +556,35 @@ model ResearchAuthor {
   @@map("research_authors")
 }
 
+model ResearchImage {
+  id         Int     @id @default(autoincrement())
+  researchId Int     @map("research_id")
+  mediaId    Int     @map("media_id")
+  caption    String? @db.VarChar(255)
+  sortOrder  Int     @default(0) @map("sort_order")
+
+  research Research @relation(fields: [researchId], references: [id], onDelete: Cascade)
+  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@index([researchId])
+  @@map("research_images")
+}
+
+/// Dokumen publikasi (laporan akhir, poster) pada detail penelitian.
+model ResearchFile {
+  id         Int    @id @default(autoincrement())
+  researchId Int    @map("research_id")
+  mediaId    Int    @map("media_id")
+  title      String @db.VarChar(200)
+  sortOrder  Int    @default(0) @map("sort_order")
+
+  research Research @relation(fields: [researchId], references: [id], onDelete: Cascade)
+  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@index([researchId])
+  @@map("research_files")
+}
+
 model CommunityService {
   id           Int           @id @default(autoincrement())
   slug         String        @unique @db.VarChar(220)
@@ -480,6 +596,9 @@ model CommunityService {
   lat          Decimal?      @db.Decimal(9, 6)
   lng          Decimal?      @db.Decimal(9, 6)
   year         Int?          @db.SmallInt
+  partnerName  String?       @map("partner_name") @db.VarChar(200)
+  /// Anggota tim: [{ "name": "...", "role": "..." }].
+  team         Json?
   coverId      Int?          @map("cover_id")
   status       ContentStatus @default(draft)
   publishedAt  DateTime?     @map("published_at")
@@ -517,6 +636,8 @@ model Partnership {
   endDate     DateTime?     @map("end_date") @db.Date
   logoId      Int?          @map("logo_id")
   url         String?       @db.VarChar(500)
+  showOnHome  Boolean       @default(false) @map("show_on_home")
+  sortOrder   Int           @default(0) @map("sort_order")
   status      ContentStatus @default(draft)
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
@@ -530,19 +651,25 @@ model Partnership {
 // ───────────────────────── Berita ─────────────────────────
 
 model News {
-  id          Int           @id @default(autoincrement())
-  slug        String        @unique @db.VarChar(220)
-  title       String        @db.VarChar(300)
-  excerpt     String?       @db.VarChar(600)
+  id             Int           @id @default(autoincrement())
+  slug           String        @unique @db.VarChar(220)
+  title          String        @db.VarChar(300)
+  excerpt        String?       @db.VarChar(600)
   /// HTML tersanitasi dari editor teks kaya.
-  body        String        @db.LongText
-  coverId     Int?          @map("cover_id")
-  categoryId  Int?          @map("category_id")
-  authorId    Int?          @map("author_id")
-  status      ContentStatus @default(draft)
-  publishedAt DateTime?     @map("published_at")
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
+  body           String        @db.LongText
+  coverId        Int?          @map("cover_id")
+  coverCaption   String?       @map("cover_caption") @db.VarChar(255)
+  /// Info acara opsional (kartu "Informasi Kegiatan" di sidebar detail).
+  eventDate      DateTime?     @map("event_date")
+  eventLocation  String?       @map("event_location") @db.VarChar(200)
+  eventOrganizer String?       @map("event_organizer") @db.VarChar(200)
+  viewCount      Int           @default(0) @map("view_count")
+  categoryId     Int?          @map("category_id")
+  authorId       Int?          @map("author_id")
+  status         ContentStatus @default(draft)
+  publishedAt    DateTime?     @map("published_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
   cover    Media?        @relation(fields: [coverId], references: [id], onDelete: SetNull)
   category NewsCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
