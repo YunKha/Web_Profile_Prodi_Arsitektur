@@ -55,20 +55,20 @@ export default async function HomePage() {
           <MediaImage media={hero?.image} preload sizes="100vw" className="-z-20" />
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,#af640e_0%,rgb(107_63_18/0.5)_40%,rgb(107_63_18/0)_100%)]"
+            className="absolute inset-0 -z-10 bg-white/60"
           />
-          <Container className="pb-32 pt-16 lg:pb-24">
-            <div className="flex max-w-4xl flex-col gap-5">
-              <p className="text-sm font-bold uppercase tracking-[0.3em] text-primary-200">{home.heroEyebrow}</p>
-              <h1 className="font-display text-5xl font-black leading-[1] text-white drop-shadow-sm sm:text-6xl lg:text-[72px]">
+          <Container className="pb-32 pt-16 lg:pb-24 flex justify-center">
+            <div className="flex max-w-4xl flex-col items-center text-center gap-5">
+              <p className="text-sm font-bold uppercase tracking-[0.3em] text-primary">{home.heroEyebrow}</p>
+              <h1 className="font-serif text-6xl font-bold tracking-tight text-center text-ink drop-shadow-sm">
                 {hero?.title ?? "Membangun Generasi Arsitek yang Kreatif & Berkelanjutan"}
               </h1>
-              {hero?.body ? <p className="max-w-2xl pt-3 text-lg font-medium leading-7 text-grey-100 sm:text-xl">{hero.body}</p> : null}
-              <div className="flex flex-wrap gap-5 pt-7">
+              {hero?.body ? <p className="max-w-2xl pt-3 text-lg font-medium leading-7 text-ink-soft sm:text-xl">{hero.body}</p> : null}
+              <div className="flex flex-wrap justify-center gap-5 pt-7">
                 <LinkButton href="/profil" className="px-10 py-[18px] text-sm">
                   Profil Prodi
                 </LinkButton>
-                <LinkButton href="#kontak" variant="ghostLight" className="px-10 py-4 text-sm">
+                <LinkButton href="#kontak" variant="outline" className="px-10 py-4 text-sm">
                   Hubungi Kami
                 </LinkButton>
               </div>

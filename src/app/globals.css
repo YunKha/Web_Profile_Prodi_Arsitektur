@@ -5,14 +5,16 @@
  * Situs hanya punya tema terang di desain, jadi tidak ada varian gelap.
  */
 :root {
-  --background: #fafaf9;
+  --background: #F8F6F3;
   --surface: #ffffff;
-  --text-primary: #1c1917;
-  --text-secondary: #57534e;
-  --text-muted: #6e6e6e;
+  --text-primary: #1F1F1F;
+  --text-secondary: #666666;
+  --text-muted: #837469;
   --border: #e7e5e4;
   --border-warm: #e7e1d8;
-  --accent-brown: #8a6a45;
+  --accent-brown: #6B3F12;
+  --darkest-brown: #4F2900;
+  --primary-orange: #D89242;
 
   --primary-100: #fee5d9;
   --primary-200: #feb17f;
@@ -42,6 +44,8 @@
   --color-line: var(--border);
   --color-line-warm: var(--border-warm);
   --color-brown: var(--accent-brown);
+  --color-darkest-brown: var(--darkest-brown);
+  --color-primary-orange: var(--primary-orange);
 
   --color-primary-100: var(--primary-100);
   --color-primary-200: var(--primary-200);
@@ -63,6 +67,7 @@
 
   --font-sans: var(--font-inter);
   --font-display: var(--font-hanken);
+  --font-serif: var(--font-serif);
 
   --shadow-card: 0 10px 40px -10px rgb(175 100 14 / 0.1);
   --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);

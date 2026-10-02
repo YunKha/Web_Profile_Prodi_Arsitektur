@@ -7,7 +7,7 @@ import { mediaUrl } from "@/lib/site";
 import { MediaImage } from "@/components/ui/media-image";
 import { Badge, cx } from "@/components/ui/primitives";
 
-const cardBase = "group flex flex-col overflow-hidden rounded-2xl border border-line-warm bg-white transition hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgb(175_100_14/0.25)]";
+const cardBase = "group flex flex-col overflow-hidden rounded-xl border border-line-warm bg-white transition hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgb(175_100_14/0.25)]";
 
 // ───────────── Berita ─────────────
 
@@ -44,7 +44,7 @@ export function NewsCard({ news, headingLevel = "h3" }: { news: NewsCardData; he
             <span className="sr-only">kali dilihat</span>
           </span>
         </div>
-        <Heading className="font-display text-xl font-bold leading-[1.375] text-[#222]">
+        <Heading className="font-display text-2xl font-bold leading-[1.375] text-[#222]">
           <Link href={`/berita/${news.slug}`} className="line-clamp-2 hover:text-primary">
             {news.title}
           </Link>
@@ -92,7 +92,7 @@ export function AchievementCard({ item }: { item: AchievementCardData }) {
           <Trophy className="size-3.5" aria-hidden />
           {levelLabel[item.level] ?? item.level}
         </p>
-        <h3 className="font-display text-xl font-bold leading-snug text-ink">
+        <h3 className="font-display text-2xl font-bold leading-snug text-ink">
           <Link href={`/mahasiswa/prestasi/${item.slug}`} className="line-clamp-2 hover:text-primary">
             {item.title}
           </Link>
@@ -112,7 +112,7 @@ export function ShowcaseCard({ item, highlight = false }: { item: AchievementCar
     <Link
       href={`/mahasiswa/prestasi/${item.slug}`}
       className={cx(
-        "group relative block aspect-[4/5] overflow-hidden rounded-2xl",
+        "group relative block aspect-[4/5] overflow-hidden rounded-xl",
         highlight && "border-2 border-[rgb(217_164_65/0.3)] shadow-[0_25px_50px_-12px_rgb(0_0_0/0.4)]",
       )}
     >
@@ -216,7 +216,7 @@ export function ServiceCard({ item }: { item: ServiceCardData }) {
             </span>
           ) : null}
         </p>
-        <h3 className="font-display text-xl font-bold leading-snug text-ink">
+        <h3 className="font-display text-2xl font-bold leading-snug text-ink">
           <Link href={`/pengabdian/${item.slug}`} className="line-clamp-2 hover:text-primary">
             {item.title}
           </Link>
@@ -343,7 +343,7 @@ export function DocumentLink({
 }) {
   if (!media) {
     return (
-      <div className="flex items-center gap-4 rounded-2xl border border-dashed border-line-warm bg-white p-5 text-sm text-muted">
+      <div className="flex items-center gap-4 rounded-xl border border-dashed border-line-warm bg-white p-5 text-sm text-muted">
         <FileText className="size-6 text-grey-300" aria-hidden />
         {title} — belum tersedia
       </div>
@@ -354,7 +354,7 @@ export function DocumentLink({
   return (
     <a
       href={`${href}?download=${encodeURIComponent(filename)}`}
-      className="group flex items-center gap-4 rounded-2xl border border-line-warm bg-white p-5 transition hover:border-primary hover:shadow-[var(--shadow-card)]"
+      className="group flex items-center gap-4 rounded-xl border border-line-warm bg-white p-5 transition hover:border-primary hover:shadow-[var(--shadow-card)]"
     >
       <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary">
         <FileText className="size-6" aria-hidden />

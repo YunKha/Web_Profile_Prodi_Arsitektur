@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Inter } from "next/font/google";
+import { Hanken_Grotesk, Inter, Lora } from "next/font/google";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -11,6 +11,11 @@ const hanken = Hanken_Grotesk({
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const lora = Lora({
+  variable: "--font-serif",
   subsets: ["latin"],
 });
 
@@ -34,7 +39,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" data-scroll-behavior="smooth" className={`${hanken.variable} ${inter.variable} h-full antialiased`}>
+    <html lang="id" data-scroll-behavior="smooth" className={`${hanken.variable} ${inter.variable} ${lora.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
