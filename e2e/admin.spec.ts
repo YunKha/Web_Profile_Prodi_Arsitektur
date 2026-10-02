@@ -29,7 +29,7 @@ test("editor bisa menulis, menerbitkan, lalu menghapus berita", async ({ page })
   const title = `Uji Otomatis ${Date.now()}`;
 
   await login(page);
-  await page.getByRole("link", { name: "Berita", exact: true }).first().click();
+  await page.goto("/admin/berita");
   await page.getByRole("link", { name: "Tulis berita" }).click();
 
   // Validasi: isi kosong ditolak tanpa menghapus judul yang sudah diketik.

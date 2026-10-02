@@ -7,7 +7,7 @@ import { mediaUrl } from "@/lib/site";
 import { MediaImage } from "@/components/ui/media-image";
 import { Badge, cx } from "@/components/ui/primitives";
 
-const cardBase = "group flex flex-col overflow-hidden rounded-2xl border border-line-warm bg-white transition hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgb(175_100_14/0.25)]";
+const cardBase = "group flex flex-col overflow-hidden rounded-xl border border-line-warm bg-white transition hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgb(175_100_14/0.25)]";
 
 // ───────────── Berita ─────────────
 
@@ -26,13 +26,13 @@ export function NewsCard({ news, headingLevel = "h3" }: { news: NewsCardData; he
   const Heading = headingLevel;
   const author = news.author?.name ?? "Admin Warta";
   return (
-    <article className={cardBase}>
+    <article className={cx(cardBase, "relative")}>
       <Link href={`/berita/${news.slug}`} className="relative block h-60 overflow-hidden" tabIndex={-1} aria-hidden>
         <MediaImage media={news.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-500 group-hover:scale-105" />
         {news.category ? <Badge className="absolute left-5 top-5">{news.category.name}</Badge> : null}
       </Link>
-      <div className="flex flex-1 flex-col gap-4 p-8">
-        <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.05em] text-brown">
+      <div className="flex flex-1 flex-col gap-4 p-5 sm:p-6 md:p-8">
+        <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.05em] text-brown">
           <span className="flex items-center gap-1.5">
             <Image src="/images/icons/meta-date.svg" alt="" width={18} height={20} className="h-4 w-auto" />
             <time dateTime={news.publishedAt?.toISOString()}>{formatShortDate(news.publishedAt)}</time>
@@ -44,8 +44,8 @@ export function NewsCard({ news, headingLevel = "h3" }: { news: NewsCardData; he
             <span className="sr-only">kali dilihat</span>
           </span>
         </div>
-        <Heading className="font-display text-xl font-bold leading-[1.375] text-[#222]">
-          <Link href={`/berita/${news.slug}`} className="line-clamp-2 hover:text-primary">
+        <Heading className="font-display text-2xl font-bold leading-[1.375] text-ink">
+          <Link href={`/berita/${news.slug}`} className="line-clamp-2 hover:text-primary after:absolute after:inset-0">
             {news.title}
           </Link>
         </Heading>
@@ -55,8 +55,8 @@ export function NewsCard({ news, headingLevel = "h3" }: { news: NewsCardData; he
             {initials(author)}
           </span>
           <div>
-            <p className="text-xs font-bold text-[#222]">{author}</p>
-            <p className="text-[10px] font-bold uppercase tracking-[-0.025em] text-muted">Redaksi Jurusan</p>
+            <p className="text-xs font-bold text-ink">{author}</p>
+            <p className="text-xs font-bold uppercase text-muted">Redaksi Jurusan</p>
           </div>
         </div>
       </div>
@@ -82,18 +82,18 @@ export const levelLabel: Record<string, string> = { lokal: "Tingkat Lokal", nasi
 
 export function AchievementCard({ item }: { item: AchievementCardData }) {
   return (
-    <article className={cardBase}>
+    <article className={cx(cardBase, "relative")}>
       <Link href={`/mahasiswa/prestasi/${item.slug}`} className="relative block aspect-[3/2] overflow-hidden border-b border-line-warm" tabIndex={-1} aria-hidden>
         <MediaImage media={item.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-500 group-hover:scale-105" />
         {item.rankLabel ? <Badge tone="dark" className="absolute right-5 top-5 rounded-md">{item.rankLabel}</Badge> : null}
       </Link>
-      <div className="flex flex-1 flex-col gap-4 p-6">
+      <div className="flex flex-1 flex-col gap-4 p-4 sm:p-5 md:p-6">
         <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em] text-primary">
           <Trophy className="size-3.5" aria-hidden />
           {levelLabel[item.level] ?? item.level}
         </p>
-        <h3 className="font-display text-xl font-bold leading-snug text-ink">
-          <Link href={`/mahasiswa/prestasi/${item.slug}`} className="line-clamp-2 hover:text-primary">
+        <h3 className="font-display text-2xl font-bold leading-snug text-ink">
+          <Link href={`/mahasiswa/prestasi/${item.slug}`} className="line-clamp-2 hover:text-primary after:absolute after:inset-0">
             {item.title}
           </Link>
         </h3>
@@ -112,7 +112,7 @@ export function ShowcaseCard({ item, highlight = false }: { item: AchievementCar
     <Link
       href={`/mahasiswa/prestasi/${item.slug}`}
       className={cx(
-        "group relative block aspect-[4/5] overflow-hidden rounded-2xl",
+        "group relative block aspect-[4/5] overflow-hidden rounded-xl",
         highlight && "border-2 border-[rgb(217_164_65/0.3)] shadow-[0_25px_50px_-12px_rgb(0_0_0/0.4)]",
       )}
     >
@@ -216,7 +216,7 @@ export function ServiceCard({ item }: { item: ServiceCardData }) {
             </span>
           ) : null}
         </p>
-        <h3 className="font-display text-xl font-bold leading-snug text-ink">
+        <h3 className="font-display text-2xl font-bold leading-snug text-ink">
           <Link href={`/pengabdian/${item.slug}`} className="line-clamp-2 hover:text-primary">
             {item.title}
           </Link>
@@ -343,7 +343,7 @@ export function DocumentLink({
 }) {
   if (!media) {
     return (
-      <div className="flex items-center gap-4 rounded-2xl border border-dashed border-line-warm bg-white p-5 text-sm text-muted">
+      <div className="flex items-center gap-4 rounded-xl border border-dashed border-line-warm bg-white p-5 text-sm text-muted">
         <FileText className="size-6 text-grey-300" aria-hidden />
         {title} — belum tersedia
       </div>
@@ -354,7 +354,7 @@ export function DocumentLink({
   return (
     <a
       href={`${href}?download=${encodeURIComponent(filename)}`}
-      className="group flex items-center gap-4 rounded-2xl border border-line-warm bg-white p-5 transition hover:border-primary hover:shadow-[var(--shadow-card)]"
+      className="group flex items-center gap-4 rounded-xl border border-line-warm bg-white p-5 transition hover:border-primary hover:shadow-[var(--shadow-card)]"
     >
       <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary">
         <FileText className="size-6" aria-hidden />

@@ -85,7 +85,7 @@ export function Badge({ children, tone = "brown", className }: { children: React
     dark: "bg-secondary text-white",
   };
   return (
-    <span className={cx("inline-flex items-center rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.1em]", tones[tone], className)}>
+    <span className={cx("inline-flex items-center rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.1em]", tones[tone], className)}>
       {children}
     </span>
   );
@@ -93,7 +93,7 @@ export function Badge({ children, tone = "brown", className }: { children: React
 
 export function EmptyState({ title, description, icon }: { title: string; description?: string; icon?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line-warm bg-white px-6 py-16 text-center">
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-line-warm bg-white px-6 py-16 text-center">
       {icon ? <div className="text-primary">{icon}</div> : null}
       <p className="font-display text-xl font-bold text-ink">{title}</p>
       {description ? <p className="max-w-md text-sm leading-6 text-muted">{description}</p> : null}
