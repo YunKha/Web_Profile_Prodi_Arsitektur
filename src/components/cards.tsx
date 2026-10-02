@@ -26,13 +26,13 @@ export function NewsCard({ news, headingLevel = "h3" }: { news: NewsCardData; he
   const Heading = headingLevel;
   const author = news.author?.name ?? "Admin Warta";
   return (
-    <article className={cardBase}>
+    <article className={cx(cardBase, "relative")}>
       <Link href={`/berita/${news.slug}`} className="relative block h-60 overflow-hidden" tabIndex={-1} aria-hidden>
         <MediaImage media={news.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-500 group-hover:scale-105" />
         {news.category ? <Badge className="absolute left-5 top-5">{news.category.name}</Badge> : null}
       </Link>
-      <div className="flex flex-1 flex-col gap-4 p-8">
-        <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.05em] text-brown">
+      <div className="flex flex-1 flex-col gap-4 p-5 sm:p-6 md:p-8">
+        <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.05em] text-brown">
           <span className="flex items-center gap-1.5">
             <Image src="/images/icons/meta-date.svg" alt="" width={18} height={20} className="h-4 w-auto" />
             <time dateTime={news.publishedAt?.toISOString()}>{formatShortDate(news.publishedAt)}</time>
@@ -44,8 +44,8 @@ export function NewsCard({ news, headingLevel = "h3" }: { news: NewsCardData; he
             <span className="sr-only">kali dilihat</span>
           </span>
         </div>
-        <Heading className="font-display text-2xl font-bold leading-[1.375] text-[#222]">
-          <Link href={`/berita/${news.slug}`} className="line-clamp-2 hover:text-primary">
+        <Heading className="font-display text-2xl font-bold leading-[1.375] text-ink">
+          <Link href={`/berita/${news.slug}`} className="line-clamp-2 hover:text-primary after:absolute after:inset-0">
             {news.title}
           </Link>
         </Heading>
@@ -55,8 +55,8 @@ export function NewsCard({ news, headingLevel = "h3" }: { news: NewsCardData; he
             {initials(author)}
           </span>
           <div>
-            <p className="text-xs font-bold text-[#222]">{author}</p>
-            <p className="text-[10px] font-bold uppercase tracking-[-0.025em] text-muted">Redaksi Jurusan</p>
+            <p className="text-xs font-bold text-ink">{author}</p>
+            <p className="text-xs font-bold uppercase text-muted">Redaksi Jurusan</p>
           </div>
         </div>
       </div>
@@ -82,18 +82,18 @@ export const levelLabel: Record<string, string> = { lokal: "Tingkat Lokal", nasi
 
 export function AchievementCard({ item }: { item: AchievementCardData }) {
   return (
-    <article className={cardBase}>
+    <article className={cx(cardBase, "relative")}>
       <Link href={`/mahasiswa/prestasi/${item.slug}`} className="relative block aspect-[3/2] overflow-hidden border-b border-line-warm" tabIndex={-1} aria-hidden>
         <MediaImage media={item.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-500 group-hover:scale-105" />
         {item.rankLabel ? <Badge tone="dark" className="absolute right-5 top-5 rounded-md">{item.rankLabel}</Badge> : null}
       </Link>
-      <div className="flex flex-1 flex-col gap-4 p-6">
+      <div className="flex flex-1 flex-col gap-4 p-4 sm:p-5 md:p-6">
         <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em] text-primary">
           <Trophy className="size-3.5" aria-hidden />
           {levelLabel[item.level] ?? item.level}
         </p>
         <h3 className="font-display text-2xl font-bold leading-snug text-ink">
-          <Link href={`/mahasiswa/prestasi/${item.slug}`} className="line-clamp-2 hover:text-primary">
+          <Link href={`/mahasiswa/prestasi/${item.slug}`} className="line-clamp-2 hover:text-primary after:absolute after:inset-0">
             {item.title}
           </Link>
         </h3>

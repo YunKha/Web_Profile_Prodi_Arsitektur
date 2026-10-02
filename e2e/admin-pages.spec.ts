@@ -38,6 +38,10 @@ test("semua halaman admin terbuka tanpa galat", async ({ page }) => {
   page.on("pageerror", (e) => errors.push(e.message));
   await login(page);
 
+  await page.goto("/admin");
+  await expect(page.locator("main h1")).toBeVisible();
+  await expect(page.getByText("Terjadi kesalahan")).toHaveCount(0);
+
   for (const m of modules) {
     await page.goto(`/admin/${m}`);
     await expect(page.locator("main h1")).toBeVisible();
