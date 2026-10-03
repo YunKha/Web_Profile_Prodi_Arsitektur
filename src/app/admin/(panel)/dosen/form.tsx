@@ -3,6 +3,7 @@ import { CheckboxField, FormLayout, FormSection, SelectField, StatusField, TextA
 import { MediaField } from "@/components/admin/media-picker";
 import { RepeaterField } from "@/components/admin/repeater";
 import type { MediaItem } from "@/lib/admin/media-actions";
+import { expertiseGroups } from "@/lib/expertise";
 import { saveLecturer } from "./actions";
 
 export type LecturerFormData = {
@@ -18,6 +19,7 @@ export type LecturerFormData = {
   studyProgram: string | null;
   startYear: number | null;
   expertise: string | null;
+  expertiseGroup: string | null;
   bio: string | null;
   photo: MediaItem | null;
   email: string | null;
@@ -26,6 +28,9 @@ export type LecturerFormData = {
   sintaId: string | null;
   scopusId: string | null;
   orcidId: string | null;
+  wosId: string | null;
+  serdosNumber: string | null;
+  serdosInstitution: string | null;
   sintaUrl: string | null;
   scholarUrl: string | null;
   websiteUrl: string | null;
@@ -33,6 +38,7 @@ export type LecturerFormData = {
   sortOrder: number;
   status: string;
   education: { degree: string; major: string; institution: string; gradYear: number }[];
+  certifications: { number: string; institution: string; title: string }[];
 };
 
 export function LecturerForm({ item }: { item?: LecturerFormData }) {
@@ -47,7 +53,15 @@ export function LecturerForm({ item }: { item?: LecturerFormData }) {
                 <TextField name="frontTitle" label="Gelar depan" defaultValue={item?.frontTitle} placeholder="Dr. Ir." maxLength={60} />
                 <TextField name="backTitle" label="Gelar belakang" defaultValue={item?.backTitle} placeholder="S.T., M.T." maxLength={80} />
                 <TextField name="structuralRole" label="Jabatan struktural / peran" defaultValue={item?.structuralRole} placeholder="Ketua Program Studi" maxLength={120} />
-                <TextField name="expertise" label="Bidang keahlian" defaultValue={item?.expertise} maxLength={255} />
+                <SelectField
+                  name="expertiseGroup"
+                  label="Kelompok bidang keahlian"
+                  placeholder="— Pilih kelompok keahlian —"
+                  options={expertiseGroups.map((g) => ({ value: g.value, label: g.label }))}
+                  defaultValue={item?.expertiseGroup}
+                  hint="Dipakai untuk filter di halaman Dosen & Staf."
+                />
+                <TextField name="expertise" label="Rincian keahlian (opsional)" defaultValue={item?.expertise} maxLength={255} placeholder="Mis. Perancangan Kota & Perumahan" className="md:col-span-2" />
               </div>
               <TextAreaField name="bio" label="Biografi singkat" defaultValue={item?.bio} rows={4} maxLength={5000} />
             </FormSection>
@@ -67,10 +81,31 @@ export function LecturerForm({ item }: { item?: LecturerFormData }) {
                 <TextField name="sintaId" label="SINTA ID" defaultValue={item?.sintaId} maxLength={40} />
                 <TextField name="scopusId" label="Scopus Author ID" defaultValue={item?.scopusId} maxLength={40} />
                 <TextField name="orcidId" label="ORCID iD" defaultValue={item?.orcidId} placeholder="0000-0002-1234-5678" maxLength={40} />
+                <TextField name="wosId" label="Web of Science ResearcherID" defaultValue={item?.wosId} placeholder="ABC-1234-2020" maxLength={40} />
                 <TextField name="sintaUrl" label="URL profil SINTA" type="url" defaultValue={item?.sintaUrl} placeholder="https://sinta.kemdikbud.go.id/authors/profile/…" />
                 <TextField name="scholarUrl" label="URL Google Scholar" type="url" defaultValue={item?.scholarUrl} placeholder="https://scholar.google.com/citations?user=…" />
                 <TextField name="websiteUrl" label="Situs web / portofolio" type="url" defaultValue={item?.websiteUrl} />
               </div>
+            </FormSection>
+            <FormSection title="Sertifikasi dosen" description="Sertifikat pendidik (serdos). Satu per dosen; kosongkan bila belum ada.">
+              <div className="grid gap-4 md:grid-cols-2">
+                <TextField name="serdosNumber" label="Nomor sertifikat" defaultValue={item?.serdosNumber} maxLength={60} />
+                <TextField name="serdosInstitution" label="Institusi penerbit" defaultValue={item?.serdosInstitution} maxLength={200} placeholder="Kementerian Pendidikan Tinggi, Sains, dan Teknologi" />
+              </div>
+            </FormSection>
+            <FormSection title="Sertifikasi profesi" description="Mis. Sertifikat Keahlian Arsitek dari IAI. Bisa lebih dari satu.">
+              <RepeaterField
+                name="certifications"
+                label="Daftar sertifikasi"
+                addLabel="Tambah sertifikasi"
+                max={10}
+                defaultValue={item?.certifications}
+                columns={[
+                  { key: "number", label: "Nomor sertifikat", maxLength: 80 },
+                  { key: "institution", label: "Institusi penerbit", maxLength: 200 },
+                  { key: "title", label: "Gelar / sebutan profesi", maxLength: 120, placeholder: "Ar. / Arsitek Madya" },
+                ]}
+              />
             </FormSection>
             <FormSection title="Riwayat pendidikan">
               <RepeaterField
@@ -84,11 +119,12 @@ export function LecturerForm({ item }: { item?: LecturerFormData }) {
                     key: "degree",
                     label: "Jenjang",
                     type: "select",
-                    width: "90px",
+                    width: "110px",
                     options: [
                       { value: "S3", label: "S3" },
                       { value: "S2", label: "S2" },
                       { value: "S1", label: "S1" },
+                      { value: "Profesi", label: "Profesi" },
                     ],
                   },
                   { key: "major", label: "Program studi", maxLength: 150 },

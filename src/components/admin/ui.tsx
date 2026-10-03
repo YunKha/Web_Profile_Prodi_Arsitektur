@@ -19,7 +19,7 @@ export function PageHeader({
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex flex-col gap-1">
         {back ? (
-          <Link href={back.href} className="mb-1 inline-flex w-fit items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
+          <Link prefetch={false} href={back.href} className="mb-1 inline-flex w-fit items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
             <ChevronLeft className="size-3.5" aria-hidden /> {back.label}
           </Link>
         ) : null}
@@ -33,7 +33,7 @@ export function PageHeader({
 
 export function NewButton({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-white shadow-sm hover:bg-primary-500">
+    <Link prefetch={false} href={href} className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-white shadow-sm hover:bg-primary-500">
       <Plus className="size-4" aria-hidden /> {label}
     </Link>
   );
@@ -46,7 +46,7 @@ export function GhostLink({ href, children, external }: { href: string; children
       {children}
     </a>
   ) : (
-    <Link href={href} className={cls}>
+    <Link prefetch={false} href={href} className={cls}>
       {children}
     </Link>
   );
@@ -182,7 +182,7 @@ export function AdminPagination({ page, pageCount, total, href }: { page: number
       {pageCount > 1 ? (
         <div className="flex items-center gap-2">
           {page > 1 ? (
-            <Link href={href(page - 1)} className="flex size-9 items-center justify-center rounded-lg border border-line bg-white hover:border-primary" aria-label="Sebelumnya">
+            <Link prefetch={false} href={href(page - 1)} className="flex size-9 items-center justify-center rounded-lg border border-line bg-white hover:border-primary" aria-label="Sebelumnya">
               <ChevronLeft className="size-4" />
             </Link>
           ) : null}
@@ -190,7 +190,7 @@ export function AdminPagination({ page, pageCount, total, href }: { page: number
             Halaman {page} dari {pageCount}
           </span>
           {page < pageCount ? (
-            <Link href={href(page + 1)} className="flex size-9 items-center justify-center rounded-lg border border-line bg-white hover:border-primary" aria-label="Berikutnya">
+            <Link prefetch={false} href={href(page + 1)} className="flex size-9 items-center justify-center rounded-lg border border-line bg-white hover:border-primary" aria-label="Berikutnya">
               <ChevronRight className="size-4" />
             </Link>
           ) : null}
@@ -213,7 +213,7 @@ export function listHref(base: string, params: Record<string, string | number | 
 
 export function EditLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className="font-semibold text-ink hover:text-primary">
+    <Link prefetch={false} href={href} className="font-semibold text-ink hover:text-primary">
       {children}
     </Link>
   );

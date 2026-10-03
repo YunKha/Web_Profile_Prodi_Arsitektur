@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Eye, Quote } from "lucide-react";
+import { Eye, Maximize2, Network, Quote } from "lucide-react";
 import { PageHero } from "@/components/layouts/page-hero";
 import { SubNav } from "@/components/layouts/sub-nav";
 import { MediaImage } from "@/components/ui/media-image";
 import { Container, Paragraphs } from "@/components/ui/primitives";
 import { formatCompact } from "@/lib/format";
 import { getMissions, getPageBlocks, getStats } from "@/lib/queries/common";
-import { profilTabs } from "@/lib/site";
+import { mediaUrl, profilTabs } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Profil — Visi & Misi",
@@ -15,7 +15,8 @@ export const metadata: Metadata = {
 
 export default async function ProfilPage() {
   const [blocks, missions, stats] = await Promise.all([getPageBlocks("profil"), getMissions(), getStats()]);
-  const { hero, sejarah, visi } = blocks;
+  const { hero, sejarah, visi, struktur } = blocks;
+  const strukturSrc = mediaUrl(struktur?.image?.path);
   const intro = blocks["misi-intro"];
 
   const statItems = [
@@ -58,6 +59,44 @@ export default async function ProfilPage() {
           </div>
         </Container>
       </section>
+
+      {/* Struktur organisasi — tampil bila gambarnya sudah diunggah di admin */}
+      {strukturSrc ? (
+        <section id="struktur-organisasi" className="scroll-mt-32 border-t border-line-warm py-20 lg:py-24" aria-labelledby="struktur">
+          <Container className="flex flex-col gap-10">
+            <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-100 text-primary">
+                <Network className="size-6" aria-hidden />
+              </span>
+              <h2 id="struktur" className="font-display text-3xl font-black uppercase text-ink sm:text-4xl">
+                {struktur?.title ?? "Struktur Organisasi"}
+              </h2>
+              <span className="h-1 w-16 bg-primary" aria-hidden />
+              {struktur?.body ? <p className="text-lg leading-8 text-ink-soft">{struktur.body}</p> : null}
+            </div>
+            <figure className="flex flex-col items-center gap-4">
+              <a
+                href={strukturSrc}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block w-full max-w-5xl overflow-hidden rounded-2xl border border-line-warm bg-white p-3 shadow-[var(--shadow-card)] sm:p-6"
+              >
+                <MediaImage
+                  media={struktur?.image}
+                  fill={false}
+                  alt={struktur?.image?.altText || "Bagan struktur organisasi Program Studi Arsitektur"}
+                  sizes="(min-width: 1024px) 1024px, 100vw"
+                  className="h-auto w-full"
+                />
+                <span className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-ink/80 px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <Maximize2 className="size-3.5" aria-hidden /> Perbesar
+                </span>
+              </a>
+              <figcaption className="text-xs text-muted">Klik gambar untuk melihat ukuran penuh.</figcaption>
+            </figure>
+          </Container>
+        </section>
+      ) : null}
 
       {/* Visi & Misi */}
       <section id="visi-misi" className="scroll-mt-32 bg-white py-20 lg:py-28" aria-labelledby="visi-misi-title">

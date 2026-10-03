@@ -42,7 +42,7 @@ export default async function PagesIndex({ searchParams }: PageProps<"/admin/hal
               <p className="text-xs text-ink-soft">{p.blocks.map((b) => b.label).join(" · ")}</p>
               <div className="mt-auto flex items-center justify-between pt-2">
                 <span className="text-[11px] text-muted">{l ? `Diubah ${formatDateTime(l.createdAt)} oleh ${l.user?.name ?? "—"}` : "Belum pernah diubah"}</span>
-                <Link href={`/admin/halaman/${p.key}`} className="inline-flex items-center gap-1 text-sm font-bold text-primary">
+                <Link prefetch={false} href={`/admin/halaman/${p.key}`} className="inline-flex items-center gap-1 text-sm font-bold text-primary">
                   Edit <ArrowRight className="size-4" aria-hidden />
                 </Link>
               </div>

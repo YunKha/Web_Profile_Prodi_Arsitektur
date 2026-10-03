@@ -21,6 +21,7 @@ import {
   LogOut,
   Menu,
   Newspaper,
+  Route,
   ScrollText,
   Settings,
   Tag,
@@ -54,6 +55,7 @@ export const adminNav: Group[] = [
       { href: "/admin/akreditasi", label: "Akreditasi", icon: BadgeCheck },
       { href: "/admin/fasilitas", label: "Fasilitas", icon: Building },
       { href: "/admin/mata-kuliah", label: "Mata Kuliah & RPS", icon: BookOpen },
+      { href: "/admin/jalur-ta", label: "Jalur Tugas Akhir", icon: Route },
       { href: "/admin/dokumen", label: "Dokumen", icon: FileText },
     ],
   },
@@ -91,7 +93,7 @@ function NavLinks({ role, onNavigate }: { role: string; onNavigate?: () => void 
             {items.map((i) => {
               const active = i.href === "/admin" ? pathname === "/admin" : pathname === i.href || pathname.startsWith(`${i.href}/`);
               return (
-                <Link
+                <Link prefetch={false}
                   key={i.href}
                   href={i.href}
                   onClick={onNavigate}
@@ -124,7 +126,7 @@ export function AdminSidebar({ user }: { user: { name: string; email: string; ro
 
   const content = (
     <div className="flex h-full flex-col gap-6 overflow-y-auto px-4 py-5">
-      <Link href="/admin" className="flex items-center gap-2.5 px-2">
+      <Link prefetch={false} href="/admin" className="flex items-center gap-2.5 px-2">
         <Image src="/images/logo-untad.png" alt="" width={32} height={32} className="size-8 object-contain" />
         <span className="leading-tight">
           <span className="block font-display text-sm font-bold text-white">ARSITEKTUR UNTAD</span>
@@ -136,7 +138,7 @@ export function AdminSidebar({ user }: { user: { name: string; email: string; ro
         <a href="/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-white/70 hover:bg-white/10 hover:text-white">
           <ExternalLink className="size-4" aria-hidden /> Lihat website
         </a>
-        <Link href="/admin/akun" className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/10">
+        <Link prefetch={false} href="/admin/akun" className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/10">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-black text-white">{user.name.slice(0, 1).toUpperCase()}</span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold text-white">{user.name}</span>

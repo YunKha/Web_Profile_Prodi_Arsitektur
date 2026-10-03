@@ -6,7 +6,7 @@ import { imageSize } from "image-size";
 import { db } from "@/lib/db/client";
 
 /** Folder unggahan, di luar `public/` agar file baru langsung bisa dilayani di production. */
-export const UPLOAD_DIR = path.resolve(process.env.UPLOAD_DIR ?? path.join(process.cwd(), "storage", "uploads"));
+export const UPLOAD_DIR = path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR ?? path.join(/*turbopackIgnore: true*/ process.cwd(), "storage", "uploads"));
 
 const MB = 1024 * 1024;
 
@@ -70,8 +70,8 @@ export async function saveUpload(
   const now = new Date();
   const dir = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}`;
   const rel = `${dir}/${randomBytes(12).toString("hex")}.${kind.ext}`;
-  await mkdir(path.join(UPLOAD_DIR, dir), { recursive: true });
-  await writeFile(path.join(UPLOAD_DIR, rel), buf);
+  await mkdir(path.join(/*turbopackIgnore: true*/ UPLOAD_DIR, dir), { recursive: true });
+  await writeFile(path.join(/*turbopackIgnore: true*/ UPLOAD_DIR, rel), buf);
 
   return db.media.create({
     data: {
@@ -89,7 +89,7 @@ export async function saveUpload(
 
 /** Path absolut yang aman untuk path relatif media, atau null bila keluar dari folder unggahan. */
 export function resolveUploadPath(rel: string): string | null {
-  const abs = path.resolve(UPLOAD_DIR, rel);
+  const abs = path.resolve(/*turbopackIgnore: true*/ UPLOAD_DIR, rel);
   return abs.startsWith(UPLOAD_DIR + path.sep) ? abs : null;
 }
 

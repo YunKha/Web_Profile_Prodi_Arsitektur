@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowUpRight, Award, BookOpen, Briefcase, Clock, GraduationCap, IdCard } from "lucide-react";
+import { ArrowUpRight, Award, BadgeCheck, BookOpen, Briefcase, Clock, GraduationCap, IdCard, ScrollText } from "lucide-react";
 import { Breadcrumb } from "@/components/layouts/breadcrumb";
 import { SubNav } from "@/components/layouts/sub-nav";
 import { MediaImage } from "@/components/ui/media-image";
 import { Container, Paragraphs } from "@/components/ui/primitives";
+import { expertiseLabel } from "@/lib/expertise";
 import { lecturerDisplayName } from "@/lib/format";
 import { currentYear } from "@/lib/queries/common";
 import { getLecturer, getLecturerSlugs } from "@/lib/queries/people";
@@ -47,11 +48,13 @@ export default async function DosenDetailPage({ params }: PageProps<"/profil/dos
     ["SINTA ID", l.sintaId, l.sintaUrl],
     ["Scopus ID", l.scopusId, l.scopusId ? `https://www.scopus.com/authid/detail.uri?authorId=${l.scopusId}` : null],
     ["ORCID ID", l.orcidId, l.orcidId ? `https://orcid.org/${l.orcidId}` : null],
+    ["Web of Science ID", l.wosId, l.wosId ? `https://www.webofscience.com/wos/author/record/${encodeURIComponent(l.wosId)}` : null],
   ];
   const links = [
     { label: "SINTA Kemdikbud", tag: "SINTA", href: l.sintaUrl },
     { label: "Google Scholar", tag: "Scholar", href: l.scholarUrl },
     { label: "ORCID", tag: "iD", href: l.orcidId ? `https://orcid.org/${l.orcidId}` : null },
+    { label: "Web of Science", tag: "WoS", href: l.wosId ? `https://www.webofscience.com/wos/author/record/${encodeURIComponent(l.wosId)}` : null },
     { label: "Situs Web", tag: "Web", href: l.websiteUrl },
   ].filter((x) => x.href);
 
@@ -82,6 +85,10 @@ export default async function DosenDetailPage({ params }: PageProps<"/profil/dos
             <article className="flex flex-col items-center gap-4 rounded-2xl border border-line-warm bg-white p-8 text-center shadow-[var(--shadow-card)]">
               <h2 className="font-display text-2xl font-black leading-tight text-ink">{name}</h2>
               {l.structuralRole ? <p className="text-xs font-bold uppercase tracking-[0.12em] text-primary">{l.structuralRole}</p> : null}
+              {l.expertiseGroup ? (
+                <p className="rounded-full bg-primary-100 px-3 py-1 text-xs font-bold text-primary-500">{expertiseLabel(l.expertiseGroup)}</p>
+              ) : null}
+              {l.expertise ? <p className="text-sm text-muted">{l.expertise}</p> : null}
               <div className="relative mt-2 size-48 overflow-hidden rounded-full border-4 border-white shadow-[0_0_0_4px_var(--primary-100),var(--shadow-soft)]">
                 <MediaImage media={l.photo} alt={name} sizes="192px" />
               </div>
@@ -169,7 +176,9 @@ export default async function DosenDetailPage({ params }: PageProps<"/profil/dos
                   {l.education.map((e, i) => (
                     <li key={e.id} className="flex gap-6">
                       <div className="flex flex-col items-center">
-                        <span className={`flex size-12 shrink-0 items-center justify-center rounded-full font-display text-sm font-black ${i === 0 ? "bg-primary text-white shadow-md" : "border-2 border-primary-200 bg-white text-primary"}`}>
+                        <span
+                          className={`flex size-12 shrink-0 items-center justify-center rounded-full font-display font-black ${e.degree === "Profesi" ? "text-[9px] uppercase tracking-tight" : "text-sm"} ${i === 0 ? "bg-primary text-white shadow-md" : "border-2 border-primary-200 bg-white text-primary"}`}
+                        >
                           {e.degree}
                         </span>
                         {i < l.education.length - 1 ? <span className="my-2 w-px flex-1 bg-line-warm" aria-hidden /> : null}
@@ -186,6 +195,50 @@ export default async function DosenDetailPage({ params }: PageProps<"/profil/dos
                 <p className="mt-4 text-sm text-muted">Riwayat pendidikan belum diisi.</p>
               )}
             </section>
+
+            {l.certifications.length || l.serdosNumber ? (
+              <section className="grid gap-6 md:grid-cols-2" aria-label="Sertifikasi">
+                {l.certifications.length ? (
+                  <div className="rounded-2xl border border-line-warm bg-white p-6 sm:p-8 md:col-span-2">
+                    <h3 className="flex items-center gap-3 font-display text-2xl font-bold text-ink">
+                      <BadgeCheck className="size-6 text-primary" aria-hidden />
+                      Sertifikasi Profesi
+                    </h3>
+                    <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+                      {l.certifications.map((c) => (
+                        <li key={c.id} className="flex flex-col gap-3 rounded-xl border border-line-warm bg-background p-5">
+                          <p className="font-display text-lg font-bold text-ink">{c.title}</p>
+                          <dl className="grid grid-cols-[110px_1fr] gap-y-1.5 text-sm">
+                            <dt className="text-muted">No. sertifikat</dt>
+                            <dd className="break-words font-semibold text-ink">{c.number}</dd>
+                            <dt className="text-muted">Institusi</dt>
+                            <dd className="font-medium text-ink-soft">{c.institution}</dd>
+                          </dl>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {l.serdosNumber ? (
+                  <div className="rounded-2xl border border-line-warm bg-white p-6 sm:p-8 md:col-span-2">
+                    <h3 className="flex items-center gap-3 font-display text-2xl font-bold text-ink">
+                      <ScrollText className="size-6 text-primary" aria-hidden />
+                      Sertifikasi Dosen
+                    </h3>
+                    <dl className="mt-6 grid gap-4 sm:grid-cols-2">
+                      <div className="rounded-xl border border-line-warm bg-background p-5">
+                        <dt className="text-xs font-bold uppercase tracking-[0.1em] text-muted">Nomor sertifikat</dt>
+                        <dd className="mt-1.5 break-words font-display text-lg font-bold text-ink">{l.serdosNumber}</dd>
+                      </div>
+                      <div className="rounded-xl border border-line-warm bg-background p-5">
+                        <dt className="text-xs font-bold uppercase tracking-[0.1em] text-muted">Institusi penerbit</dt>
+                        <dd className="mt-1.5 font-semibold text-ink">{l.serdosInstitution ?? "—"}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                ) : null}
+              </section>
+            ) : null}
 
             {l.research.length ? (
               <section className="rounded-2xl border border-line-warm bg-white p-6 sm:p-8" aria-labelledby="riset">

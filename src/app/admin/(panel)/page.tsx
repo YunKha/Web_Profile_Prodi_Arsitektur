@@ -47,7 +47,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
               <span className="flex size-10 items-center justify-center rounded-xl bg-primary-100 text-primary">
                 <c.icon className="size-5" aria-hidden />
               </span>
-              <Link href={c.add} className="flex size-8 items-center justify-center rounded-lg text-muted hover:bg-primary-100 hover:text-primary" aria-label={`Tambah ${c.label}`}>
+              <Link prefetch={false} href={c.add} className="flex size-8 items-center justify-center rounded-lg text-muted hover:bg-primary-100 hover:text-primary" aria-label={`Tambah ${c.label}`}>
                 <Plus className="size-4" />
               </Link>
             </div>
@@ -56,7 +56,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
               <p className="text-sm font-semibold text-ink-soft">{c.label} terbit</p>
               {c.data[1] ? <p className="mt-1 text-xs text-muted">{c.data[1]} draf</p> : null}
             </div>
-            <Link href={c.href} className="mt-auto inline-flex items-center gap-1 text-xs font-bold text-primary">
+            <Link prefetch={false} href={c.href} className="mt-auto inline-flex items-center gap-1 text-xs font-bold text-primary">
               Kelola <ArrowRight className="size-3.5" aria-hidden />
             </Link>
           </div>
@@ -71,7 +71,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
             <ul className="mt-4 divide-y divide-line">
               {drafts.map((d) => (
                 <li key={d.id}>
-                  <Link href={`/admin/berita/${d.id}`} className="flex items-center justify-between gap-4 py-3 text-sm hover:text-primary">
+                  <Link prefetch={false} href={`/admin/berita/${d.id}`} className="flex items-center justify-between gap-4 py-3 text-sm hover:text-primary">
                     <span className="font-semibold">{d.title}</span>
                     <span className="shrink-0 text-xs text-muted">{formatDateTime(d.updatedAt)}</span>
                   </Link>
@@ -87,7 +87,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
           <div className="flex items-center justify-between">
             <h2 className="font-display text-lg font-bold text-ink">Aktivitas terbaru</h2>
             {user.role === "admin" ? (
-              <Link href="/admin/log" className="text-xs font-bold text-primary">
+              <Link prefetch={false} href="/admin/log" className="text-xs font-bold text-primary">
                 Semua log
               </Link>
             ) : null}

@@ -102,7 +102,8 @@ Skema lengkap ada di `prisma/schema.prisma` (PRD §6 ditambah `sessions`, `login
 - **Media** disimpan di `storage/uploads` (atau `UPLOAD_DIR`), bukan `public/`, dan dilayani `/media/*`. Tipe file dicek dari isi; SVG tidak diizinkan. Media yang masih dipakai tidak bisa dihapus.
 - **Rich text** disanitasi di server (`sanitizeRichText`) sebelum disimpan; publik merender lewat `<Prose>`.
 - **Rute dinamis publik** memakai `generateStaticParams` dari DB (placeholder bila tabel kosong); bagian yang membaca `searchParams` dibungkus `<Suspense>`.
-- **Teks halaman** (hero, pengantar) berasal dari `page_blocks`; tambahkan blok baru di `src/lib/page-registry.ts` agar otomatis muncul di editor "Halaman".
+- **Teks halaman** (hero, pengantar) berasal dari `page_blocks`; tambahkan blok baru di `src/lib/page-registry.ts` agar otomatis muncul di editor "Halaman". Field yang tersedia: `title`, `body`, `image`, `link` (URL + label tombol, mis. Google Drive) dan `gallery` (tabel `page_block_images`).
+- **Jalur Tugas Akhir** (`thesis_tracks` + `thesis_steps`, tag cache `thesis`) dikelola di `/admin/jalur-ta` dan tampil sebagai tab di Panduan TA.
 
 ## Server vs Client Components
 

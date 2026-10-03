@@ -45,20 +45,47 @@ export type PageBlockData = {
   title: string | null;
   body: string | null;
   image: MediaRef | null;
+  linkUrl: string | null;
+  linkLabel: string | null;
+  images: { media: MediaRef; caption: string | null }[];
   sortOrder: number;
 };
 
-/** Semua blok editorial satu halaman, diindeks per blockKey. */
+/** Semua blok editorial satu halaman (beserta tautan & galerinya), diindeks per blockKey. */
 export async function getPageBlocks(pageKey: string): Promise<Record<string, PageBlockData>> {
   "use cache";
   cacheLife("days");
   cacheTag("pages");
-  const rows = await db.pageBlock.findMany({
-    where: { pageKey },
+  const [rows, images] = await Promise.all([
+    db.pageBlock.findMany({
+      where: { pageKey },
+      orderBy: { sortOrder: "asc" },
+      select: { blockKey: true, title: true, body: true, linkUrl: true, linkLabel: true, sortOrder: true, image: { select: mediaSelect } },
+    }),
+    db.pageBlockImage.findMany({
+      where: { pageKey },
+      orderBy: { sortOrder: "asc" },
+      select: { blockKey: true, caption: true, media: { select: mediaSelect } },
+    }),
+  ]);
+  return Object.fromEntries(
+    rows.map((r) => [
+      r.blockKey,
+      { ...r, images: images.filter((i) => i.blockKey === r.blockKey).map(({ media, caption }) => ({ media, caption })) },
+    ]),
+  );
+}
+
+/** Jalur Tugas Akhir beserta tahapannya (halaman Panduan TA). */
+export async function getThesisTracks() {
+  "use cache";
+  cacheLife("days");
+  cacheTag("thesis");
+  return db.thesisTrack.findMany({
+    where: published,
     orderBy: { sortOrder: "asc" },
-    select: { blockKey: true, title: true, body: true, sortOrder: true, image: { select: mediaSelect } },
+    include: { steps: { orderBy: { sortOrder: "asc" } } },
   });
-  return Object.fromEntries(rows.map((r) => [r.blockKey, r]));
 }
 
 export async function getMissions() {

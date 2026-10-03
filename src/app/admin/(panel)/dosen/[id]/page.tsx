@@ -19,7 +19,11 @@ export default async function EditLecturerPage({ params }: PageProps<"/admin/dos
   if (!Number.isInteger(id)) notFound();
   const item = await db.lecturer.findUnique({
     where: { id },
-    include: { photo: { select: mediaItemSelect }, education: { orderBy: { gradYear: "desc" } } },
+    include: {
+      photo: { select: mediaItemSelect },
+      education: { orderBy: { gradYear: "desc" } },
+      certifications: { orderBy: { sortOrder: "asc" }, select: { number: true, institution: true, title: true } },
+    },
   });
   if (!item) notFound();
 
