@@ -4,7 +4,8 @@
  * benar-benar dipakai halaman publik.
  */
 
-export type BlockField = "title" | "body" | "image";
+/** "link" = URL + label tombol; "gallery" = beberapa gambar berketerangan. */
+export type BlockField = "title" | "body" | "image" | "link" | "gallery";
 
 export type BlockDef = { key: string; label: string; fields: BlockField[]; hint?: string };
 
@@ -34,6 +35,12 @@ export const pageRegistry: PageDef[] = [
     blocks: [
       hero(["title", "image"]),
       { key: "sejarah", label: "Sejarah", fields: ["title", "body", "image"], hint: "Pisahkan paragraf dengan baris kosong." },
+      {
+        key: "struktur",
+        label: "Struktur Organisasi",
+        fields: ["title", "body", "image"],
+        hint: "Bagan struktur organisasi prodi, tampil setelah Sejarah. Unggah gambar (PNG/JPG) resolusi tinggi agar teks terbaca.",
+      },
       { key: "visi", label: "Visi", fields: ["body"] },
       { key: "misi-intro", label: "Pengantar Visi & Misi", fields: ["title", "body"] },
     ],
@@ -64,11 +71,18 @@ export const pageRegistry: PageDef[] = [
     path: "/akademik/panduan-ta",
     blocks: [
       hero(),
-      { key: "tahapan", label: "Judul seksi tahapan", fields: ["title", "body"] },
-      { key: "tahap-1", label: "Tahap 1", fields: ["title", "body"] },
-      { key: "tahap-2", label: "Tahap 2", fields: ["title", "body"] },
-      { key: "tahap-3", label: "Tahap 3", fields: ["title", "body"] },
-      { key: "tahap-4", label: "Tahap 4", fields: ["title", "body"] },
+      {
+        key: "tahapan",
+        label: "Judul seksi jalur & tahapan",
+        fields: ["title", "body"],
+        hint: "Jalur Tugas Akhir dan tahapannya diatur di menu Jalur Tugas Akhir.",
+      },
+      {
+        key: "repositori",
+        label: "Repositori judul Tugas Akhir",
+        fields: ["title", "body", "link"],
+        hint: "Tautan Google Drive berisi daftar judul TA yang sudah dipakai, agar judul baru tidak sama.",
+      },
     ],
   },
   {
@@ -102,13 +116,30 @@ export const pageRegistry: PageDef[] = [
     key: "alumni",
     label: "Mahasiswa — Alumni",
     path: "/mahasiswa/alumni",
-    blocks: [hero(), { key: "tracer", label: "Tracer study", fields: ["title", "body"], hint: "Angka statistik diatur di Pengaturan → Statistik Alumni." }],
+    blocks: [
+      hero(),
+      {
+        key: "tracer",
+        label: "Tracer study",
+        fields: ["title", "body", "link"],
+        hint: "Angka statistik diatur di Pengaturan → Statistik Alumni. Tautan mengarah ke Google Drive bukti tracer study.",
+      },
+    ],
   },
   {
     key: "penelitian",
     label: "Penelitian",
     path: "/penelitian",
-    blocks: [hero(), { key: "cta", label: "Ajakan di akhir halaman", fields: ["title", "body"] }],
+    blocks: [
+      hero(),
+      {
+        key: "roadmap",
+        label: "Roadmap penelitian",
+        fields: ["title", "body", "link", "gallery"],
+        hint: "Tautan Google Drive dokumen roadmap, dan satu gambar per tema roadmap (isi keterangan dengan nama tema).",
+      },
+      { key: "cta", label: "Ajakan di akhir halaman", fields: ["title", "body"] },
+    ],
   },
   {
     key: "pengabdian-dosen",

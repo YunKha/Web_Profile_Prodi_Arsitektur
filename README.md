@@ -31,9 +31,9 @@ data contoh** (nama dosen, nomor SK, mitra) dan harus diganti dengan data asli l
 | Dasbor | Ringkasan konten, draf berita, aktivitas terbaru |
 | Berita, Kategori & Label | Editor teks kaya, sampul, jadwal terbit, info acara, label terkait |
 | Prestasi, Penelitian, Pengabdian | Detail lengkap, galeri, dokumen PDF, dosen pembimbing/peneliti, peta lokasi |
-| Dosen & Staf, Akreditasi, Fasilitas, Mata Kuliah & RPS, Dokumen | Data profil dan dokumen akademik |
+| Dosen & Staf, Akreditasi, Fasilitas, Mata Kuliah & RPS, Jalur Tugas Akhir, Dokumen | Data profil (kelompok keahlian, sertifikasi profesi & dosen, WoS ID), dokumen akademik, tahapan tiap jalur TA |
 | Program Kegiatan, Lembaga, Alumni, Kerja Sama | Konten kemahasiswaan dan mitra |
-| Halaman | Judul hero, teks pengantar, foto latar setiap halaman; daftar misi |
+| Halaman | Judul hero, teks pengantar, foto latar setiap halaman; struktur organisasi; tautan Google Drive (tracer study, repositori judul TA, roadmap penelitian); gambar tema roadmap; daftar misi |
 | Pustaka Media | Unggah (seret-lepas), teks alternatif, hapus file yang tidak dipakai |
 | Pengaturan *(Admin)* | Kontak, media sosial, statistik, footer, profil pimpinan di Beranda, tracer study |
 | Pengguna, Log Aktivitas *(Admin)* | Kelola akun Admin/Editor, jejak audit siapa mengubah apa |

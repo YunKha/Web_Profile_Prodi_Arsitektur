@@ -31,6 +31,14 @@ enum Degree {
   S1
   S2
   S3
+  Profesi
+}
+
+/// Kelompok bidang keahlian dosen (filter di halaman Dosen & Staf).
+enum ExpertiseGroup {
+  perancangan
+  teori_sejarah
+  sains_bangunan
 }
 
 enum AccreditationDocType {
@@ -130,6 +138,7 @@ model Media {
   uploadedBy User? @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
 
   pageBlocks           PageBlock[]
+  pageBlockImages      PageBlockImage[]
   accreditationDocs    AccreditationDocument[]
   lecturers            Lecturer[]
   facilityImages       FacilityImage[]
@@ -169,12 +178,59 @@ model PageBlock {
   title     String? @db.VarChar(255)
   body      String? @db.Text
   imageId   Int?    @map("image_id")
+  /// Tautan tombol opsional (mis. Google Drive tracer study / repositori judul TA).
+  linkUrl   String? @map("link_url") @db.VarChar(500)
+  linkLabel String? @map("link_label") @db.VarChar(100)
   sortOrder Int     @default(0) @map("sort_order")
 
   image Media? @relation(fields: [imageId], references: [id], onDelete: SetNull)
 
   @@unique([pageKey, blockKey])
   @@map("page_blocks")
+}
+
+/// Galeri gambar milik sebuah blok halaman (mis. gambar tiap tema roadmap penelitian).
+model PageBlockImage {
+  id        Int     @id @default(autoincrement())
+  pageKey   String  @map("page_key") @db.VarChar(80)
+  blockKey  String  @map("block_key") @db.VarChar(80)
+  mediaId   Int     @map("media_id")
+  caption   String? @db.VarChar(255)
+  sortOrder Int     @default(0) @map("sort_order")
+
+  media Media @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@index([pageKey, blockKey])
+  @@map("page_block_images")
+}
+
+/// Jalur Tugas Akhir (Desain, Riset, Sayembara) di halaman Panduan TA.
+model ThesisTrack {
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique @db.VarChar(80)
+  name        String        @db.VarChar(120)
+  description String?       @db.Text
+  sortOrder   Int           @default(0) @map("sort_order")
+  status      ContentStatus @default(published)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  steps ThesisStep[]
+
+  @@map("thesis_tracks")
+}
+
+model ThesisStep {
+  id        Int    @id @default(autoincrement())
+  trackId   Int    @map("track_id")
+  title     String @db.VarChar(150)
+  body      String @db.Text
+  sortOrder Int    @default(0) @map("sort_order")
+
+  track ThesisTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@index([trackId])
+  @@map("thesis_steps")
 }
 
 model MissionItem {
@@ -235,41 +291,48 @@ model AccreditationDocument {
 }
 
 model Lecturer {
-  id             Int           @id @default(autoincrement())
-  slug           String        @unique @db.VarChar(160)
-  fullName       String        @map("full_name") @db.VarChar(200)
-  frontTitle     String?       @map("front_title") @db.VarChar(60)
-  backTitle      String?       @map("back_title") @db.VarChar(80)
-  staffType      StaffType     @default(dosen) @map("staff_type")
-  structuralRole String?       @map("structural_role") @db.VarChar(120)
-  academicRank   String?       @map("academic_rank") @db.VarChar(80)
-  civilRank      String?       @map("civil_rank") @db.VarChar(80)
-  studyProgram   String?       @map("study_program") @db.VarChar(120)
+  id                Int             @id @default(autoincrement())
+  slug              String          @unique @db.VarChar(160)
+  fullName          String          @map("full_name") @db.VarChar(200)
+  frontTitle        String?         @map("front_title") @db.VarChar(60)
+  backTitle         String?         @map("back_title") @db.VarChar(80)
+  staffType         StaffType       @default(dosen) @map("staff_type")
+  structuralRole    String?         @map("structural_role") @db.VarChar(120)
+  academicRank      String?         @map("academic_rank") @db.VarChar(80)
+  civilRank         String?         @map("civil_rank") @db.VarChar(80)
+  studyProgram      String?         @map("study_program") @db.VarChar(120)
   /// Tahun mulai bekerja. "Masa kerja" dihitung di aplikasi, tidak disimpan.
-  startYear      Int?          @map("start_year") @db.SmallInt
-  expertise      String?       @db.VarChar(255)
-  bio            String?       @db.Text
-  photoId        Int?          @map("photo_id")
-  email          String?       @db.VarChar(190)
-  nidn           String?       @db.VarChar(30)
-  nuptk          String?       @db.VarChar(30)
-  sintaId        String?       @map("sinta_id") @db.VarChar(40)
-  scopusId       String?       @map("scopus_id") @db.VarChar(40)
-  orcidId        String?       @map("orcid_id") @db.VarChar(40)
-  sintaUrl       String?       @map("sinta_url") @db.VarChar(500)
-  scholarUrl     String?       @map("scholar_url") @db.VarChar(500)
-  websiteUrl     String?       @map("website_url") @db.VarChar(500)
-  isActive       Boolean       @default(true) @map("is_active")
-  sortOrder      Int           @default(0) @map("sort_order")
-  status         ContentStatus @default(draft)
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
+  startYear         Int?            @map("start_year") @db.SmallInt
+  expertise         String?         @db.VarChar(255)
+  expertiseGroup    ExpertiseGroup? @map("expertise_group")
+  bio               String?         @db.Text
+  photoId           Int?            @map("photo_id")
+  email             String?         @db.VarChar(190)
+  nidn              String?         @db.VarChar(30)
+  nuptk             String?         @db.VarChar(30)
+  sintaId           String?         @map("sinta_id") @db.VarChar(40)
+  scopusId          String?         @map("scopus_id") @db.VarChar(40)
+  orcidId           String?         @map("orcid_id") @db.VarChar(40)
+  /// Web of Science ResearcherID, mis. "ABC-1234-2020".
+  wosId             String?         @map("wos_id") @db.VarChar(40)
+  /// Sertifikasi dosen (serdos) — satu per dosen.
+  serdosNumber      String?         @map("serdos_number") @db.VarChar(60)
+  serdosInstitution String?         @map("serdos_institution") @db.VarChar(200)
+  sintaUrl          String?         @map("sinta_url") @db.VarChar(500)
+  scholarUrl        String?         @map("scholar_url") @db.VarChar(500)
+  websiteUrl        String?         @map("website_url") @db.VarChar(500)
+  isActive          Boolean         @default(true) @map("is_active")
+  sortOrder         Int             @default(0) @map("sort_order")
+  status            ContentStatus   @default(draft)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
 
   photo Media? @relation(fields: [photoId], references: [id], onDelete: SetNull)
 
-  education  LecturerEducation[]
-  advisories AchievementAdvisor[]
-  research   ResearchAuthor[]
+  education      LecturerEducation[]
+  certifications LecturerCertification[]
+  advisories     AchievementAdvisor[]
+  research       ResearchAuthor[]
 
   @@index([status, sortOrder])
   @@fulltext([fullName, expertise])
@@ -288,6 +351,22 @@ model LecturerEducation {
 
   @@index([lecturerId])
   @@map("lecturer_education")
+}
+
+/// Sertifikasi profesi dosen (mis. Sertifikat Keahlian Arsitek IAI). Bisa lebih dari satu.
+model LecturerCertification {
+  id          Int    @id @default(autoincrement())
+  lecturerId  Int    @map("lecturer_id")
+  number      String @db.VarChar(80)
+  institution String @db.VarChar(200)
+  /// Gelar/sebutan profesi yang diperoleh, mis. "Ar." atau "Arsitek Madya".
+  title       String @db.VarChar(120)
+  sortOrder   Int    @default(0) @map("sort_order")
+
+  lecturer Lecturer @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+
+  @@index([lecturerId])
+  @@map("lecturer_certifications")
 }
 
 // ───────────────────────── Fasilitas ─────────────────────────

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Award, Calendar, Download, FileText, Globe, GraduationCap, Mail, MapPin, Trophy, User } from "lucide-react";
 import type { MediaRef } from "@/lib/queries/common";
 import { formatBytes, formatCompact, formatShortDate, initials, lecturerDisplayName, truncate } from "@/lib/format";
+import { expertiseLabel } from "@/lib/expertise";
 import { mediaUrl } from "@/lib/site";
 import { MediaImage } from "@/components/ui/media-image";
 import { Badge, cx } from "@/components/ui/primitives";
@@ -258,6 +259,7 @@ export type LecturerCardData = {
   backTitle: string | null;
   structuralRole: string | null;
   expertise: string | null;
+  expertiseGroup?: string | null;
   email: string | null;
   sintaUrl: string | null;
   scholarUrl: string | null;
@@ -281,6 +283,9 @@ export function LecturerCard({ item }: { item: LecturerCardData }) {
             {name}
           </Link>
         </h3>
+        {item.expertiseGroup ? (
+          <p className="w-fit rounded-full bg-primary-100 px-3 py-1 text-[11px] font-bold text-primary-500">{expertiseLabel(item.expertiseGroup)}</p>
+        ) : null}
         {item.expertise ? <p className="text-sm leading-6 text-muted">{item.expertise}</p> : null}
         <div className="mt-auto flex items-center gap-1 border-t border-line-warm pt-3">
           {item.email ? (

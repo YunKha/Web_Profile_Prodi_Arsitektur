@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Download } from "lucide-react";
+import { Download, FolderSearch } from "lucide-react";
 import { Breadcrumb } from "@/components/layouts/breadcrumb";
 import { SubNav } from "@/components/layouts/sub-nav";
+import { ExternalLinkButton } from "@/components/ui/external-link-button";
 import { MediaImage } from "@/components/ui/media-image";
 import { Container, buttonClass } from "@/components/ui/primitives";
 import { formatBytes } from "@/lib/format";
-import { getDocument, getPageBlocks } from "@/lib/queries/common";
+import { getDocument, getPageBlocks, getThesisTracks } from "@/lib/queries/common";
 import { akademikTabs } from "@/lib/site";
+import { TrackTabs } from "./track-tabs";
 
 export const metadata: Metadata = {
   title: "Panduan Tugas Akhir",
@@ -14,9 +16,8 @@ export const metadata: Metadata = {
 };
 
 export default async function PanduanTaPage() {
-  const [blocks, doc] = await Promise.all([getPageBlocks("panduan-ta"), getDocument("buku-panduan-ta")]);
-  const { hero, tahapan } = blocks;
-  const steps = [1, 2, 3, 4].map((n) => blocks[`tahap-${n}`]).filter(Boolean);
+  const [blocks, doc, tracks] = await Promise.all([getPageBlocks("panduan-ta"), getDocument("buku-panduan-ta"), getThesisTracks()]);
+  const { hero, tahapan, repositori } = blocks;
 
   return (
     <>
@@ -49,24 +50,36 @@ export default async function PanduanTaPage() {
         <Container className="flex flex-col gap-16">
           <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
             <h2 id="tahapan" className="font-display text-3xl font-black uppercase text-ink sm:text-4xl">
-              {tahapan?.title ?? "Tahapan Tugas Akhir"}
+              {tahapan?.title ?? "Jalur & Tahapan Tugas Akhir"}
             </h2>
             {tahapan?.body ? <p className="text-lg text-ink-soft">{tahapan.body}</p> : null}
           </div>
-          <ol className="relative grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            <span aria-hidden className="absolute left-6 right-6 top-6 hidden h-0.5 bg-line-warm lg:block" />
-            {steps.map((s, i) => (
-              <li key={i} className="relative flex flex-col gap-4">
-                <span className="relative flex size-12 items-center justify-center rounded-full border-4 border-background bg-primary font-display text-lg font-black text-white shadow-[0_10px_15px_-3px_rgb(175_100_14/0.35)]">
-                  {i + 1}
-                </span>
-                <h3 className="font-display text-xl font-bold text-ink">{s?.title}</h3>
-                <p className="text-[15px] leading-7 text-ink-soft">{s?.body}</p>
-              </li>
-            ))}
-          </ol>
+          <TrackTabs
+            tracks={tracks.map((t) => ({ slug: t.slug, name: t.name, description: t.description, steps: t.steps.map(({ id, title, body }) => ({ id, title, body })) }))}
+          />
         </Container>
       </section>
+
+      {repositori && (repositori.linkUrl || repositori.body) ? (
+        <section className="pb-20 lg:pb-28" aria-labelledby="repositori">
+          <Container>
+            <div className="flex flex-col gap-6 rounded-3xl border border-primary-200 bg-primary-100 p-8 sm:p-10 md:flex-row md:items-center md:justify-between">
+              <div className="flex gap-5">
+                <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white text-primary shadow-sm">
+                  <FolderSearch className="size-7" aria-hidden />
+                </span>
+                <div className="flex flex-col gap-2">
+                  <h2 id="repositori" className="font-display text-2xl font-black text-ink">
+                    {repositori.title ?? "Repositori Judul Tugas Akhir"}
+                  </h2>
+                  {repositori.body ? <p className="max-w-2xl text-[15px] leading-7 text-ink-soft">{repositori.body}</p> : null}
+                </div>
+              </div>
+              <ExternalLinkButton href={repositori.linkUrl} label={repositori.linkLabel || "Buka Repositori"} className="shrink-0 self-start md:self-auto" />
+            </div>
+          </Container>
+        </section>
+      ) : null}
     </>
   );
 }

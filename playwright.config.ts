@@ -23,10 +23,13 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], channel: process.env.E2E_CHANNEL },
     },
   ],
-  webServer: {
-    command: "npx next build && npx next start -H 127.0.0.1",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: true,
-    timeout: 180_000,
-  },
+  // Bila E2E_BASE_URL diisi, uji memakai server yang sudah berjalan di alamat itu.
+  webServer: process.env.E2E_BASE_URL
+    ? undefined
+    : {
+        command: "npx next build && npx next start -H 127.0.0.1",
+        url: "http://127.0.0.1:3000",
+        reuseExistingServer: true,
+        timeout: 180_000,
+      },
 });

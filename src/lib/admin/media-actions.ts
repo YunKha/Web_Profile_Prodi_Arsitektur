@@ -70,6 +70,7 @@ async function mediaUsage(id: number) {
       _count: {
         select: {
           pageBlocks: true,
+          pageBlockImages: true,
           accreditationDocs: true,
           lecturers: true,
           facilityImages: true,

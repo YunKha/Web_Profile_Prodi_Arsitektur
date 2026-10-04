@@ -19,6 +19,7 @@ const entities: Record<string, string> = {
   accreditation: "akreditasi",
   facility: "fasilitas",
   course: "mata kuliah",
+  thesis_track: "jalur tugas akhir",
   document: "dokumen",
   program: "program kegiatan",
   organization: "lembaga",

@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import Form from "next/form";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ArrowRight, ChevronRight, FlaskConical, Search } from "lucide-react";
+import { ArrowRight, ChevronRight, FlaskConical, Map as MapIcon, Search } from "lucide-react";
 import { ResearchCard, researchAuthors } from "@/components/cards";
 import { PageHero } from "@/components/layouts/page-hero";
+import { ExternalLinkButton } from "@/components/ui/external-link-button";
 import { MediaImage } from "@/components/ui/media-image";
 import { Pagination } from "@/components/ui/pagination";
 import { Badge, Container, EmptyState, LinkButton, buttonClass } from "@/components/ui/primitives";
 import { getPageBlocks, pageParam, stringParam } from "@/lib/queries/common";
 import { getFeaturedResearch, getResearchFilters, listPopularResearch, listResearch } from "@/lib/queries/content";
+import { mediaUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Penelitian",
@@ -18,7 +20,8 @@ export const metadata: Metadata = {
 
 export default async function PenelitianPage({ searchParams }: PageProps<"/penelitian">) {
   const [blocks, featured, popular] = await Promise.all([getPageBlocks("penelitian"), getFeaturedResearch(), listPopularResearch(4)]);
-  const { hero, cta } = blocks;
+  const { hero, cta, roadmap } = blocks;
+  const showRoadmap = Boolean(roadmap && (roadmap.linkUrl || roadmap.images.length || roadmap.body));
 
   return (
     <>
@@ -48,6 +51,45 @@ export default async function PenelitianPage({ searchParams }: PageProps<"/penel
                 </LinkButton>
               </div>
             </div>
+          </Container>
+        </section>
+      ) : null}
+
+      {showRoadmap && roadmap ? (
+        <section id="roadmap" className="scroll-mt-28 border-t border-line-warm py-20 lg:py-24" aria-labelledby="roadmap-title">
+          <Container className="flex flex-col gap-12">
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div className="flex max-w-2xl flex-col gap-4">
+                <p className="eyebrow flex items-center gap-2 text-primary">
+                  <MapIcon className="size-4" aria-hidden /> Arah Riset
+                </p>
+                <h2 id="roadmap-title" className="font-display text-3xl font-black text-ink sm:text-4xl">
+                  {roadmap.title ?? "Roadmap Penelitian"}
+                </h2>
+                {roadmap.body ? <p className="text-lg leading-8 text-ink-soft">{roadmap.body}</p> : null}
+              </div>
+              <ExternalLinkButton href={roadmap.linkUrl} label={roadmap.linkLabel || "Lihat Dokumen Roadmap"} variant="outline" className="self-start md:self-auto" />
+            </div>
+            {roadmap.images.length ? (
+              <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {roadmap.images.map((img, i) => (
+                  <li key={`${img.media.id}-${i}`}>
+                    <figure className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line-warm bg-white shadow-[var(--shadow-card)]">
+                      <a href={mediaUrl(img.media.path) ?? "#"} target="_blank" rel="noopener noreferrer" className="relative block aspect-[4/3] overflow-hidden bg-grey-100">
+                        <MediaImage media={img.media} alt={img.caption ?? img.media.altText ?? "Tema roadmap penelitian"} sizes="(min-width: 1024px) 33vw, 100vw" className="object-contain transition-transform duration-500 group-hover:scale-105" />
+                        <span className="sr-only">Buka gambar ukuran penuh</span>
+                      </a>
+                      <figcaption className="flex items-center gap-3 border-t border-line-warm p-5">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary-100 font-display text-sm font-black text-primary">
+                          {i + 1}
+                        </span>
+                        <span className="font-display font-bold text-ink">{img.caption ?? `Tema ${i + 1}`}</span>
+                      </figcaption>
+                    </figure>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </Container>
         </section>
       ) : null}

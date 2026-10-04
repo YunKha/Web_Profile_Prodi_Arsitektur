@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db/client";
-import type { Prisma } from "@/generated/prisma/client";
+import type { ExpertiseGroup, Prisma } from "@/generated/prisma/client";
 import { mediaSelect, paged, published } from "./common";
 
 export const LECTURER_PAGE = 8;
@@ -15,6 +15,7 @@ const lecturerCard = {
   staffType: true,
   structuralRole: true,
   expertise: true,
+  expertiseGroup: true,
   email: true,
   sintaUrl: true,
   scholarUrl: true,
@@ -22,13 +23,24 @@ const lecturerCard = {
   photo: { select: mediaSelect },
 } satisfies Prisma.LecturerSelect;
 
-export async function listLecturers({ q = "", limit = LECTURER_PAGE, type }: { q?: string; limit?: number; type?: "dosen" | "tendik" }) {
+export async function listLecturers({
+  q = "",
+  limit = LECTURER_PAGE,
+  type,
+  group,
+}: {
+  q?: string;
+  limit?: number;
+  type?: "dosen" | "tendik";
+  group?: ExpertiseGroup;
+}) {
   "use cache";
   cacheLife("hours");
   cacheTag("lecturers");
   const where: Prisma.LecturerWhereInput = {
     ...published,
     ...(type ? { staffType: type } : {}),
+    ...(group ? { expertiseGroup: group } : {}),
     ...(q
       ? { OR: [{ fullName: { contains: q } }, { expertise: { contains: q } }, { structuralRole: { contains: q } }] }
       : {}),
@@ -49,6 +61,7 @@ export async function getLecturer(slug: string) {
     include: {
       photo: { select: mediaSelect },
       education: { orderBy: [{ gradYear: "desc" }] },
+      certifications: { orderBy: { sortOrder: "asc" } },
       research: {
         where: { research: published },
         orderBy: { research: { year: "desc" } },

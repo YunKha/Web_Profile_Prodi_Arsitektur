@@ -37,7 +37,7 @@ export function NavBar({ items }: { items: NavItem[] }) {
       <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between gap-6 px-4 sm:px-8 lg:px-16">
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Beranda Arsitektur UNTAD">
           <Image src="/images/logo-untad.png" alt="" width={34} height={34} className="size-[34px] object-contain" preload />
-          <span className="font-display text-xl font-bold text-ink sm:text-2xl">ARSITEKTUR UNTAD</span>
+          <span className="font-display text-xl font-bold text-ink sm:text-2xl">S1 ARSITEKTUR UNTAD</span>
         </Link>
 
         <nav aria-label="Menu utama" className="hidden xl:block">

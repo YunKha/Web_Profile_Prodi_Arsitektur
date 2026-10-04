@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Quote } from "lucide-react";
 import { Avatar } from "@/components/cards";
 import { Pagination } from "@/components/ui/pagination";
+import { ExternalLinkButton } from "@/components/ui/external-link-button";
 import { Container, EmptyState } from "@/components/ui/primitives";
 import { getPageBlocks, getSettings, pageParam } from "@/lib/queries/common";
 import { listAlumni } from "@/lib/queries/people";
@@ -23,11 +24,14 @@ export default async function AlumniPage({ searchParams }: PageProps<"/mahasiswa
 
       <section className="py-20 lg:py-24" aria-labelledby="tracer">
         <Container className="flex flex-col gap-12">
-          <div className="flex max-w-2xl flex-col gap-3">
-            <h2 id="tracer" className="font-display text-3xl font-black text-ink sm:text-4xl">
-              {tracer?.title ?? "Tracer Study"}
-            </h2>
-            {tracer?.body ? <p className="text-lg text-ink-soft">{tracer.body}</p> : null}
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="flex max-w-2xl flex-col gap-3">
+              <h2 id="tracer" className="font-display text-3xl font-black text-ink sm:text-4xl">
+                {tracer?.title ?? "Tracer Study"}
+              </h2>
+              {tracer?.body ? <p className="text-lg text-ink-soft">{tracer.body}</p> : null}
+            </div>
+            <ExternalLinkButton href={tracer?.linkUrl} label={tracer?.linkLabel || "Lihat Bukti Tracer Study"} variant="outline" className="self-start md:self-auto" />
           </div>
           <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {settings.alumniStats.map((s) => (

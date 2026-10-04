@@ -3,25 +3,26 @@ import { notFound } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { FormSection, TextAreaField, TextField } from "@/components/admin/fields";
-import { MediaField } from "@/components/admin/media-picker";
+import { GalleryField, MediaField } from "@/components/admin/media-picker";
 import { RepeaterField } from "@/components/admin/repeater";
 import { GhostLink, PageHeader } from "@/components/admin/ui";
 import { requireUser } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
-import { mediaItemSelect, toMediaItem } from "@/lib/admin/media";
+import { mediaItemSelect, toGallery, toMediaItem } from "@/lib/admin/media";
 import { findPage } from "@/lib/page-registry";
 import { savePage } from "../actions";
 import { newFormKey } from "@/lib/admin/request";
 
 export const metadata: Metadata = { title: "Edit Halaman" };
 
-export default async function EditPageBlocks({ params }: PageProps<"/admin/halaman/[key]">) {
+export default async function EditPageBlocks({ params }: PageProps<"/admin/halaman/[halaman]">) {
   await requireUser();
   const formKey = await newFormKey();
-  const page = findPage((await params).key);
+  const page = findPage((await params).halaman);
   if (!page) notFound();
-  const [rows, missions] = await Promise.all([
+  const [rows, images, missions] = await Promise.all([
     db.pageBlock.findMany({ where: { pageKey: page.key }, include: { image: { select: mediaItemSelect } } }),
+    db.pageBlockImage.findMany({ where: { pageKey: page.key }, orderBy: { sortOrder: "asc" }, include: { media: { select: mediaItemSelect } } }),
     page.key === "profil" ? db.missionItem.findMany({ orderBy: { sortOrder: "asc" } }) : Promise.resolve([]),
   ]);
   const byKey = new Map(rows.map((r) => [r.blockKey, r]));
@@ -50,6 +51,20 @@ export default async function EditPageBlocks({ params }: PageProps<"/admin/halam
                 </div>
                 {b.fields.includes("image") ? <MediaField name={`${b.key}.imageId`} label="Gambar" defaultValue={toMediaItem(row?.image)} /> : null}
               </div>
+              {b.fields.includes("link") ? (
+                <div className="grid gap-4 md:grid-cols-[1fr_240px]">
+                  <TextField name={`${b.key}.linkUrl`} label="Tautan (Google Drive / URL)" type="url" defaultValue={row?.linkUrl} placeholder="https://drive.google.com/…" hint="Kosongkan untuk menyembunyikan tombol." />
+                  <TextField name={`${b.key}.linkLabel`} label="Teks tombol" defaultValue={row?.linkLabel} maxLength={100} placeholder="Buka di Google Drive" />
+                </div>
+              ) : null}
+              {b.fields.includes("gallery") ? (
+                <GalleryField
+                  name={`${b.key}.images`}
+                  label="Gambar"
+                  defaultValue={toGallery(images.filter((i) => i.blockKey === b.key))}
+                  hint="Isi keterangan tiap gambar (mis. nama tema). Urutan bisa diatur dengan tombol panah."
+                />
+              ) : null}
             </FormSection>
           );
         })}

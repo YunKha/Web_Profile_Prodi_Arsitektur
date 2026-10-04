@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash } from "lucide-react";
 import { cx } from "@/components/ui/primitives";
-import { useFieldError } from "./admin-form";
+import { useNestedFieldError } from "./admin-form";
 import { inputClass } from "./fields";
 
 export type RepeaterColumn = {
@@ -40,7 +40,7 @@ export function RepeaterField({
   max?: number;
 }) {
   const [rows, setRows] = useState<Row[]>(() => defaultValue.map((r) => Object.fromEntries(columns.map((c) => [c.key, r[c.key] == null ? "" : String(r[c.key])]))));
-  const error = useFieldError(name);
+  const error = useNestedFieldError(name);
   const blank = () => Object.fromEntries(columns.map((c) => [c.key, c.type === "select" ? (c.options?.[0]?.value ?? "") : ""]));
 
   const update = (i: number, key: string, value: string) => setRows((prev) => prev.map((r, j) => (j === i ? { ...r, [key]: value } : r)));
