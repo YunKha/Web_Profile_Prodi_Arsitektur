@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Building, Calendar, Clock, Eye, MapPin } from "lucide-react";
 import { Breadcrumb } from "@/components/layouts/breadcrumb";
@@ -30,7 +31,17 @@ export async function generateMetadata({ params }: PageProps<"/berita/[slug]">):
   };
 }
 
-export default async function BeritaDetailPage({ params }: PageProps<"/berita/[slug]">) {
+export default function BeritaDetailPage({ params }: PageProps<"/berita/[slug]">) {
+  return (
+    <Container className="flex flex-col gap-10 py-12 lg:py-16">
+      <Suspense fallback={<div className="h-[800px] animate-pulse rounded-2xl bg-grey-100" aria-busy="true" />}>
+        <BeritaDetailContent params={params} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function BeritaDetailContent({ params }: PageProps<"/berita/[slug]">) {
   const n = await getNews((await params).slug);
   if (!n) notFound();
   const [others, neighbors] = await Promise.all([listLatestNews(3, n.id), n.publishedAt ? getNewsNeighbors(n.id, n.publishedAt) : null]);
@@ -52,7 +63,7 @@ export default async function BeritaDetailPage({ params }: PageProps<"/berita/[s
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ViewTracker type="news" id={n.id} />
-      <Container className="flex flex-col gap-10 py-12 lg:py-16">
+      <div className="flex flex-col gap-10">
         <header className="flex max-w-4xl flex-col gap-6">
           <Breadcrumb items={[{ label: "Berita", href: "/berita" }, { label: n.category?.name ?? "Detail" }]} />
           {n.category ? (
@@ -194,7 +205,7 @@ export default async function BeritaDetailPage({ params }: PageProps<"/berita/[s
             ) : null}
           </aside>
         </div>
-      </Container>
+      </div>
     </>
   );
 }
