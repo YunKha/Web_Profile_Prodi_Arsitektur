@@ -55,7 +55,7 @@ export default async function HomePage() {
           <MediaImage media={hero?.image} preload sizes="100vw" className="-z-20" />
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-primary)_0%,rgb(107_63_18/0.6)_40%,rgb(107_63_18/0)_100%)]"
+            className="absolute inset-0 -z-10 bg-black/50"
           />
           <Container className="pb-32 pt-16 lg:pb-24 flex justify-center">
             <div className="flex max-w-4xl flex-col items-center text-center gap-5">

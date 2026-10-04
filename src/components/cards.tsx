@@ -8,7 +8,7 @@ import { mediaUrl } from "@/lib/site";
 import { MediaImage } from "@/components/ui/media-image";
 import { Badge, cx } from "@/components/ui/primitives";
 
-const cardBase = "group flex flex-col overflow-hidden rounded-xl border border-line-warm bg-white transition hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgb(175_100_14/0.25)]";
+const cardBase = "group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition duration-300 hover:border-gray-200 hover:shadow-xl hover:shadow-gray-200/50";
 
 // ───────────── Berita ─────────────
 
@@ -29,35 +29,33 @@ export function NewsCard({ news, headingLevel = "h3" }: { news: NewsCardData; he
   return (
     <article className={cx(cardBase, "relative")}>
       <Link href={`/berita/${news.slug}`} className="relative block h-60 overflow-hidden" tabIndex={-1} aria-hidden>
-        <MediaImage media={news.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-500 group-hover:scale-105" />
-        {news.category ? <Badge className="absolute left-5 top-5">{news.category.name}</Badge> : null}
+        <MediaImage media={news.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-700 group-hover:scale-105" />
+        {news.category ? <Badge className="absolute left-5 top-5 shadow-sm">{news.category.name}</Badge> : null}
       </Link>
       <div className="flex flex-1 flex-col gap-4 p-5 sm:p-6 md:p-8">
-        <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.05em] text-brown">
+        <div className="flex items-center gap-3 text-sm text-muted">
           <span className="flex items-center gap-1.5">
-            <Image src="/images/icons/meta-date.svg" alt="" width={18} height={20} className="h-4 w-auto" />
+            <Calendar className="size-4" strokeWidth={1.5} aria-hidden />
             <time dateTime={news.publishedAt?.toISOString()}>{formatShortDate(news.publishedAt)}</time>
           </span>
-          <span className="size-1 rounded-full bg-line-warm" aria-hidden />
+          <span className="size-1 rounded-full bg-gray-300" aria-hidden />
           <span className="flex items-center gap-1.5">
-            <Image src="/images/icons/meta-views.svg" alt="" width={22} height={15} className="h-3 w-auto" />
-            {formatCompact(news.viewCount)}
-            <span className="sr-only">kali dilihat</span>
+            {formatCompact(news.viewCount)} <span className="text-xs">tayangan</span>
           </span>
         </div>
-        <Heading className="font-display text-2xl font-bold leading-[1.375] text-ink">
+        <Heading className="font-display text-2xl font-bold leading-tight text-ink">
           <Link href={`/berita/${news.slug}`} className="line-clamp-2 hover:text-primary after:absolute after:inset-0">
             {news.title}
           </Link>
         </Heading>
-        <p className="line-clamp-3 text-sm leading-[1.625] text-muted">{news.excerpt}</p>
-        <div className="mt-auto flex items-center gap-3 border-t border-line-warm pt-6">
-          <span className="flex size-10 items-center justify-center rounded-full bg-brown text-xs font-black text-white" aria-hidden>
+        <p className="line-clamp-3 text-sm leading-relaxed text-muted">{news.excerpt}</p>
+        <div className="mt-auto flex items-center gap-3 border-t border-gray-100 pt-6">
+          <span className="flex size-10 items-center justify-center rounded-full bg-gray-50 text-xs font-semibold text-ink-soft" aria-hidden>
             {initials(author)}
           </span>
           <div>
-            <p className="text-xs font-bold text-ink">{author}</p>
-            <p className="text-xs font-bold uppercase text-muted">Redaksi Jurusan</p>
+            <p className="text-sm font-semibold text-ink">{author}</p>
+            <p className="text-xs text-muted">Redaksi Jurusan</p>
           </div>
         </div>
       </div>
@@ -84,23 +82,23 @@ export const levelLabel: Record<string, string> = { lokal: "Tingkat Lokal", nasi
 export function AchievementCard({ item }: { item: AchievementCardData }) {
   return (
     <article className={cx(cardBase, "relative")}>
-      <Link href={`/mahasiswa/prestasi/${item.slug}`} className="relative block aspect-[3/2] overflow-hidden border-b border-line-warm" tabIndex={-1} aria-hidden>
-        <MediaImage media={item.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-500 group-hover:scale-105" />
-        {item.rankLabel ? <Badge tone="dark" className="absolute right-5 top-5 rounded-md">{item.rankLabel}</Badge> : null}
+      <Link href={`/mahasiswa/prestasi/${item.slug}`} className="relative block aspect-[3/2] overflow-hidden border-b border-gray-100" tabIndex={-1} aria-hidden>
+        <MediaImage media={item.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-700 group-hover:scale-105" />
+        {item.rankLabel ? <Badge tone="dark" className="absolute right-5 top-5 rounded-md shadow-sm">{item.rankLabel}</Badge> : null}
       </Link>
       <div className="flex flex-1 flex-col gap-4 p-4 sm:p-5 md:p-6">
-        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em] text-primary">
-          <Trophy className="size-3.5" aria-hidden />
+        <p className="flex items-center gap-2 text-xs font-semibold text-muted">
+          <Trophy className="size-4" strokeWidth={1.5} aria-hidden />
           {levelLabel[item.level] ?? item.level}
         </p>
-        <h3 className="font-display text-2xl font-bold leading-snug text-ink">
+        <h3 className="font-display text-2xl font-bold leading-tight text-ink">
           <Link href={`/mahasiswa/prestasi/${item.slug}`} className="line-clamp-2 hover:text-primary after:absolute after:inset-0">
             {item.title}
           </Link>
         </h3>
-        <div className="mt-auto flex items-center justify-between border-t border-line-warm pt-4 text-sm">
+        <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-4 text-sm">
           <span className="font-semibold text-ink-soft">{item.studentName}</span>
-          <span className="text-xs font-bold text-muted">{item.achievementYear}</span>
+          <span className="text-xs font-medium text-gray-400">{item.achievementYear}</span>
         </div>
       </div>
     </article>
@@ -118,7 +116,7 @@ export function ShowcaseCard({ item, highlight = false }: { item: AchievementCar
       )}
     >
       <MediaImage media={item.cover} sizes="(min-width: 1024px) 33vw, 100vw" className="transition-transform duration-700 group-hover:scale-105" />
-      <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#af640e_0%,rgb(175_100_14/0.3)_30%,rgb(175_100_14/0)_100%)] opacity-80" />
+      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       {item.rankLabel ? (
         <span className="absolute right-8 top-8 rounded bg-secondary px-5 py-1.5 text-[11px] font-black uppercase tracking-[0.1em] text-white shadow-lg">
           {item.rankLabel}

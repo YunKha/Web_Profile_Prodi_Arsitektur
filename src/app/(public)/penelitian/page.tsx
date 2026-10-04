@@ -137,7 +137,7 @@ export default async function PenelitianPage({ searchParams }: PageProps<"/penel
         </section>
       ) : null}
 
-      <section className="bg-[linear-gradient(135deg,#4f2a03,#7d4607_50%,#af640e)] py-20 text-white lg:py-24">
+      <section className="bg-zinc-900 py-20 text-white lg:py-24">
         <Container className="flex flex-col items-center gap-6 text-center">
           <h2 className="max-w-3xl font-display text-3xl font-black sm:text-5xl">{cta?.title ?? "Eksplorasi Hasil Penelitian"}</h2>
           {cta?.body ? <p className="max-w-2xl text-lg text-white/85">{cta.body}</p> : null}
