@@ -27,11 +27,11 @@ export function MediaImage({ media, alt, sizes = "100vw", className, preload, fi
         role="img"
         aria-label={altText || "Gambar belum tersedia"}
         className={cx(
-          "bg-[linear-gradient(135deg,var(--primary-100),var(--grey-100))] bg-cover",
+          "bg-gray-100 bg-cover",
           fill ? "absolute inset-0" : "aspect-video w-full",
           className,
         )}
-        style={{ backgroundImage: "url(/images/grid-pattern.svg), linear-gradient(135deg, var(--primary-100), var(--grey-100))" }}
+        style={{ backgroundImage: "url(/images/grid-pattern.svg)" }}
       />
     );
   }

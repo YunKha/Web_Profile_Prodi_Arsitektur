@@ -13,7 +13,7 @@ export default function LoginPage({ searchParams }: PageProps<"/admin/login">) {
     <main className="grid min-h-screen flex-1 lg:grid-cols-2">
       <section className="relative hidden overflow-hidden bg-primary-700 lg:block">
         <div aria-hidden className="absolute inset-0 bg-[url(/media/seed/hero-architecture.png)] bg-cover bg-center opacity-60" />
-        <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#af640e_0%,rgb(107_63_18/0.5)_45%,rgb(37_16_1/0.4)_100%)]" />
+        <div aria-hidden className="absolute inset-0 bg-black/50" />
         <div className="relative flex h-full flex-col justify-end gap-4 p-14 text-white">
           <p className="eyebrow text-primary-200">Panel Admin</p>
           <h1 className="max-w-md font-display text-5xl font-black leading-[1.05]">Kelola konten website Arsitektur UNTAD</h1>

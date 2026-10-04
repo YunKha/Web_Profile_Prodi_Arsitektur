@@ -192,7 +192,7 @@ export default async function PrestasiDetailPage({ params }: PageProps<"/mahasis
         </section>
       ) : null}
 
-      <section className="bg-[linear-gradient(135deg,#7d4607,#af640e_55%,#d27811)] py-20 text-white lg:py-24">
+      <section className="bg-zinc-900 py-20 text-white lg:py-24">
         <Container className="flex flex-col items-center gap-6 text-center">
           <h2 className="max-w-3xl font-display text-3xl font-black sm:text-5xl">Jelajahi Prestasi Lainnya</h2>
           <p className="max-w-2xl text-lg text-white/90">

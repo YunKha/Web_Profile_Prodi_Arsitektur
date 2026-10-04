@@ -40,7 +40,7 @@ export function PageHero({ title, description, eyebrow, breadcrumb, image, dark,
           {image ? <MediaImage media={image} preload sizes="100vw" className="-z-20" /> : null}
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,#af640e_0%,rgb(107_63_18/0.55)_40%,rgb(37_16_1/0.35)_100%)]"
+            className="absolute inset-0 -z-10 bg-black/50"
           />
         </>
       ) : (
