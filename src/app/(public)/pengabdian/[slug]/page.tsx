@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { Building, Calendar, MapPin, Users } from "lucide-react";
 import { Avatar, ServiceCard } from "@/components/cards";
 import { PageHero } from "@/components/layouts/page-hero";
@@ -31,7 +32,15 @@ function parseTeam(value: unknown): TeamMember[] {
     .map((v) => ({ name: v.name, role: typeof v.role === "string" ? v.role : undefined }));
 }
 
-export default async function PengabdianDetailPage({ params }: PageProps<"/pengabdian/[slug]">) {
+export default function PengabdianDetailPage({ params }: PageProps<"/pengabdian/[slug]">) {
+  return (
+    <Suspense fallback={<div className="h-[60vh] animate-pulse bg-grey-100" aria-busy="true" />}>
+      <PengabdianDetailContent params={params} />
+    </Suspense>
+  );
+}
+
+async function PengabdianDetailContent({ params }: PageProps<"/pengabdian/[slug]">) {
   const s = await getService((await params).slug);
   if (!s) notFound();
   const others = await listOtherServices(s.id, s.kind, 3);

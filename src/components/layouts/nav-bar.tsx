@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import type { NavItem } from "@/lib/site";
 import { cx } from "@/components/ui/primitives";
@@ -12,8 +12,7 @@ function isActive(pathname: string, match: string) {
   return pathname === match || pathname.startsWith(`${match}/`);
 }
 
-export function NavBar({ items }: { items: NavItem[] }) {
-  const pathname = usePathname();
+function NavBarUI({ items, pathname }: { items: NavItem[]; pathname: string }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [lastPath, setLastPath] = useState(pathname);
@@ -154,5 +153,18 @@ export function NavBar({ items }: { items: NavItem[] }) {
         </nav>
       ) : null}
     </header>
+  );
+}
+
+function NavBarClient({ items }: { items: NavItem[] }) {
+  const pathname = usePathname();
+  return <NavBarUI items={items} pathname={pathname} />;
+}
+
+export function NavBar({ items }: { items: NavItem[] }) {
+  return (
+    <Suspense fallback={<NavBarUI items={items} pathname="" />}>
+      <NavBarClient items={items} />
+    </Suspense>
   );
 }

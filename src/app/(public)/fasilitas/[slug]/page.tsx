@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { Users } from "lucide-react";
 import { PageHero } from "@/components/layouts/page-hero";
 import { SubNav } from "@/components/layouts/sub-nav";
@@ -26,7 +27,15 @@ export async function generateMetadata({ params }: PageProps<"/fasilitas/[slug]"
   };
 }
 
-export default async function FasilitasDetailPage({ params }: PageProps<"/fasilitas/[slug]">) {
+export default function FasilitasDetailPage({ params }: PageProps<"/fasilitas/[slug]">) {
+  return (
+    <Suspense fallback={<div className="h-[60vh] animate-pulse bg-grey-100" aria-busy="true" />}>
+      <FasilitasDetailContent params={params} />
+    </Suspense>
+  );
+}
+
+async function FasilitasDetailContent({ params }: PageProps<"/fasilitas/[slug]">) {
   const { slug } = await params;
   const [f, nav] = await Promise.all([getFacility(slug), getFacilityNav()]);
   if (!f) notFound();
