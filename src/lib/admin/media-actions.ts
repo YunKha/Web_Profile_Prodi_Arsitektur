@@ -89,6 +89,7 @@ async function mediaUsage(id: number) {
           research: true,
           researchImages: true,
           researchFiles: true,
+          repositoryArticles: true,
         },
       },
     },
@@ -96,13 +97,14 @@ async function mediaUsage(id: number) {
   if (!m) return null;
   const relations = Object.values(m._count).reduce((a, b) => a + b, 0);
   const needle = `/media/${m.path}`;
-  const [n, r, s, p] = await Promise.all([
+  const [n, r, s, p, repo] = await Promise.all([
     db.news.count({ where: { body: { contains: needle } } }),
     db.research.count({ where: { body: { contains: needle } } }),
     db.communityService.count({ where: { body: { contains: needle } } }),
     db.program.count({ where: { body: { contains: needle } } }),
+    db.repositoryArticle.count({ where: { body: { contains: needle } } }),
   ]);
-  return { path: m.path, count: relations + n + r + s + p };
+  return { path: m.path, count: relations + n + r + s + p + repo };
 }
 
 export async function deleteMediaAction(id: number): Promise<{ ok: boolean; message: string }> {

@@ -127,7 +127,10 @@ const IMG = {
     image(`staff-${n}.jpg`, "Foto pimpinan program studi"),
   partner: (n: number) => image(`partner-${n}.jpg`, "Logo mitra"),
   struktur: () =>
-    image("struktur-organisasi.png", "Bagan struktur organisasi Program Studi Arsitektur"),
+    image(
+      "struktur-organisasi.png",
+      "Bagan struktur organisasi Program Studi Arsitektur",
+    ),
 };
 
 // ───────────────────────── Akun & pengaturan ─────────────────────────
@@ -227,19 +230,34 @@ async function seedBlocks(blocks: BlockSeed[]) {
         },
       });
     } else {
-      if (imageId && !existing.imageId) await db.pageBlock.update({ where, data: { imageId } });
-      if (b.linkLabel && !existing.linkLabel) await db.pageBlock.update({ where, data: { linkLabel: b.linkLabel } });
+      if (imageId && !existing.imageId)
+        await db.pageBlock.update({ where, data: { imageId } });
+      if (b.linkLabel && !existing.linkLabel)
+        await db.pageBlock.update({ where, data: { linkLabel: b.linkLabel } });
     }
-    if (b.gallery?.length && (await db.pageBlockImage.count({ where: { pageKey: b.pageKey, blockKey: b.blockKey } })) === 0) {
+    if (
+      b.gallery?.length &&
+      (await db.pageBlockImage.count({
+        where: { pageKey: b.pageKey, blockKey: b.blockKey },
+      })) === 0
+    ) {
       for (const [i, [img, caption]] of b.gallery.entries()) {
         await db.pageBlockImage.create({
-          data: { pageKey: b.pageKey, blockKey: b.blockKey, mediaId: await img(), caption, sortOrder: i + 1 },
+          data: {
+            pageKey: b.pageKey,
+            blockKey: b.blockKey,
+            mediaId: await img(),
+            caption,
+            sortOrder: i + 1,
+          },
         });
       }
     }
   }
   // Tahapan TA lama (blok tahap-1..4) kini dikelola sebagai Jalur Tugas Akhir.
-  await db.pageBlock.deleteMany({ where: { pageKey: "panduan-ta", blockKey: { startsWith: "tahap-" } } });
+  await db.pageBlock.deleteMany({
+    where: { pageKey: "panduan-ta", blockKey: { startsWith: "tahap-" } },
+  });
 }
 
 async function seedPageBlocks() {
@@ -547,7 +565,7 @@ async function seedAccreditation() {
       data: {
         agency: "Badan Akreditasi Nasional Perguruan Tinggi",
         skNumber: "1234/SK/BAN-PT/Akred/S/VIII/2023", // contoh dari Figma
-        rank: "Unggul",
+        rank: "Baik sekali",
         validFrom: new Date("2023-08-15"),
         validTo: new Date("2028-08-15"),
         isCurrent: true,
@@ -714,33 +732,70 @@ async function seedLecturers() {
 
   // Kelompok keahlian & identitas tambahan (hanya mengisi yang masih kosong).
   const extras: Record<string, Record<string, string>> = {
-    "budi-santoso": { expertiseGroup: "perancangan", wosId: "AAB-1234-2019", serdosNumber: "091100123456", serdosInstitution: "Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi" },
+    "budi-santoso": {
+      expertiseGroup: "perancangan",
+      wosId: "AAB-1234-2019",
+      serdosNumber: "091100123456",
+      serdosInstitution:
+        "Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi",
+    },
     "anita-wijayanti": { expertiseGroup: "teori_sejarah" },
     "hendra-gunawan": { expertiseGroup: "sains_bangunan" },
     "siti-aminah": { expertiseGroup: "sains_bangunan" },
     "sarah-wijaya": { expertiseGroup: "perancangan" },
     "akhmad-fauzi": { expertiseGroup: "sains_bangunan" },
-    "herianto": { expertiseGroup: "teori_sejarah" },
+    herianto: { expertiseGroup: "teori_sejarah" },
     "maya-sari": { expertiseGroup: "perancangan" },
     "yusuf-anshori": { expertiseGroup: "perancangan" },
   };
   for (const [slug, data] of Object.entries(extras)) {
     if (!ids[slug]) continue;
-    const row = await db.lecturer.findUniqueOrThrow({ where: { id: ids[slug] } });
-    const missing = Object.fromEntries(Object.entries(data).filter(([k]) => row[k as keyof typeof row] == null));
-    if (Object.keys(missing).length) await db.lecturer.update({ where: { id: row.id }, data: missing });
+    const row = await db.lecturer.findUniqueOrThrow({
+      where: { id: ids[slug] },
+    });
+    const missing = Object.fromEntries(
+      Object.entries(data).filter(([k]) => row[k as keyof typeof row] == null),
+    );
+    if (Object.keys(missing).length)
+      await db.lecturer.update({ where: { id: row.id }, data: missing });
   }
-  if ((await db.lecturerCertification.count({ where: { lecturerId: ids["budi-santoso"] } })) === 0) {
+  if (
+    (await db.lecturerCertification.count({
+      where: { lecturerId: ids["budi-santoso"] },
+    })) === 0
+  ) {
     await db.lecturerCertification.createMany({
       data: [
-        { lecturerId: ids["budi-santoso"], number: "IAI-SKA-2011-00123", institution: "Ikatan Arsitek Indonesia (IAI)", title: "Arsitek Madya", sortOrder: 1 },
-        { lecturerId: ids["budi-santoso"], number: "LPJK-2018-45678", institution: "Lembaga Pengembangan Jasa Konstruksi", title: "Ahli Arsitektur Bangunan Gedung", sortOrder: 2 },
+        {
+          lecturerId: ids["budi-santoso"],
+          number: "IAI-SKA-2011-00123",
+          institution: "Ikatan Arsitek Indonesia (IAI)",
+          title: "Arsitek Madya",
+          sortOrder: 1,
+        },
+        {
+          lecturerId: ids["budi-santoso"],
+          number: "LPJK-2018-45678",
+          institution: "Lembaga Pengembangan Jasa Konstruksi",
+          title: "Ahli Arsitektur Bangunan Gedung",
+          sortOrder: 2,
+        },
       ],
     });
   }
-  if ((await db.lecturerEducation.count({ where: { lecturerId: ids["budi-santoso"], degree: "Profesi" } })) === 0) {
+  if (
+    (await db.lecturerEducation.count({
+      where: { lecturerId: ids["budi-santoso"], degree: "Profesi" },
+    })) === 0
+  ) {
     await db.lecturerEducation.create({
-      data: { lecturerId: ids["budi-santoso"], degree: "Profesi", major: "Pendidikan Profesi Arsitek", institution: "Universitas Hasanuddin", gradYear: 2011 },
+      data: {
+        lecturerId: ids["budi-santoso"],
+        degree: "Profesi",
+        major: "Pendidikan Profesi Arsitek",
+        institution: "Universitas Hasanuddin",
+        gradYear: 2011,
+      },
     });
   }
 
@@ -1844,38 +1899,82 @@ async function seedNews(authorId: number) {
 
 async function seedThesisTracks() {
   if ((await db.thesisTrack.count()) > 0) return;
-  const tracks: { slug: string; name: string; description: string; steps: [string, string][] }[] = [
+  const tracks: {
+    slug: string;
+    name: string;
+    description: string;
+    steps: [string, string][];
+  }[] = [
     {
       slug: "desain",
       name: "Jalur Desain",
-      description: "Tugas Akhir berupa karya perancangan arsitektur yang komprehensif, dari konsep hingga gambar kerja dan maket.",
+      description:
+        "Tugas Akhir berupa karya perancangan arsitektur yang komprehensif, dari konsep hingga gambar kerja dan maket.",
       steps: [
-        ["Pengajuan Judul", "Mahasiswa mengajukan proposal pra-desain beserta usulan dosen pembimbing kepada komisi Tugas Akhir."],
-        ["Seminar Proposal", "Presentasi konsep awal dan landasan teori di hadapan dosen penguji untuk mendapatkan persetujuan desain."],
-        ["Proses Studio & Asistensi", "Pengembangan desain secara komprehensif melalui bimbingan rutin minimal 8 kali pertemuan dengan dosen pembimbing."],
-        ["Sidang Akhir", "Evaluasi akhir karya desain arsitektur di hadapan dewan penguji sebagai syarat kelulusan program sarjana."],
+        [
+          "Pengajuan Judul",
+          "Mahasiswa mengajukan proposal pra-desain beserta usulan dosen pembimbing kepada komisi Tugas Akhir.",
+        ],
+        [
+          "Seminar Proposal",
+          "Presentasi konsep awal dan landasan teori di hadapan dosen penguji untuk mendapatkan persetujuan desain.",
+        ],
+        [
+          "Proses Studio & Asistensi",
+          "Pengembangan desain secara komprehensif melalui bimbingan rutin minimal 8 kali pertemuan dengan dosen pembimbing.",
+        ],
+        [
+          "Sidang Akhir",
+          "Evaluasi akhir karya desain arsitektur di hadapan dewan penguji sebagai syarat kelulusan program sarjana.",
+        ],
       ],
     },
     {
       slug: "riset",
       name: "Jalur Riset",
-      description: "Tugas Akhir berupa penelitian ilmiah di bidang arsitektur dengan luaran skripsi dan artikel ilmiah.",
+      description:
+        "Tugas Akhir berupa penelitian ilmiah di bidang arsitektur dengan luaran skripsi dan artikel ilmiah.",
       steps: [
-        ["Pengajuan Topik & Proposal", "Mahasiswa menyusun proposal penelitian (latar belakang, rumusan masalah, metode) dan mengusulkan dosen pembimbing."],
-        ["Seminar Proposal", "Proposal dipresentasikan di hadapan penguji untuk menguji kelayakan topik dan metode penelitian."],
-        ["Pengumpulan & Analisis Data", "Pelaksanaan survei, pengukuran, atau simulasi, dilanjutkan analisis data dengan bimbingan rutin."],
-        ["Seminar Hasil & Sidang", "Presentasi hasil penelitian, perbaikan naskah, lalu sidang akhir. Artikel disiapkan untuk publikasi."],
+        [
+          "Pengajuan Topik & Proposal",
+          "Mahasiswa menyusun proposal penelitian (latar belakang, rumusan masalah, metode) dan mengusulkan dosen pembimbing.",
+        ],
+        [
+          "Seminar Proposal",
+          "Proposal dipresentasikan di hadapan penguji untuk menguji kelayakan topik dan metode penelitian.",
+        ],
+        [
+          "Pengumpulan & Analisis Data",
+          "Pelaksanaan survei, pengukuran, atau simulasi, dilanjutkan analisis data dengan bimbingan rutin.",
+        ],
+        [
+          "Seminar Hasil & Sidang",
+          "Presentasi hasil penelitian, perbaikan naskah, lalu sidang akhir. Artikel disiapkan untuk publikasi.",
+        ],
       ],
     },
     {
       slug: "sayembara",
       name: "Jalur Sayembara Arsitektur",
-      description: "Tugas Akhir melalui keikutsertaan dalam sayembara arsitektur tingkat nasional atau internasional yang disetujui program studi.",
+      description:
+        "Tugas Akhir melalui keikutsertaan dalam sayembara arsitektur tingkat nasional atau internasional yang disetujui program studi.",
       steps: [
-        ["Pemilihan Sayembara", "Mahasiswa memilih sayembara yang sesuai kriteria program studi dan mengajukan rencana keikutsertaan."],
-        ["Persetujuan Komisi TA", "Komisi Tugas Akhir menilai kelayakan sayembara dan menetapkan dosen pembimbing."],
-        ["Pengerjaan Karya & Asistensi", "Penyusunan karya sesuai kerangka acuan sayembara dengan asistensi berkala bersama pembimbing."],
-        ["Submisi & Sidang Karya", "Karya dikirim ke panitia sayembara, lalu dipresentasikan dalam sidang Tugas Akhir di program studi."],
+        [
+          "Pemilihan Sayembara",
+          "Mahasiswa memilih sayembara yang sesuai kriteria program studi dan mengajukan rencana keikutsertaan.",
+        ],
+        [
+          "Persetujuan Komisi TA",
+          "Komisi Tugas Akhir menilai kelayakan sayembara dan menetapkan dosen pembimbing.",
+        ],
+        [
+          "Pengerjaan Karya & Asistensi",
+          "Penyusunan karya sesuai kerangka acuan sayembara dengan asistensi berkala bersama pembimbing.",
+        ],
+        [
+          "Submisi & Sidang Karya",
+          "Karya dikirim ke panitia sayembara, lalu dipresentasikan dalam sidang Tugas Akhir di program studi.",
+        ],
       ],
     },
   ];
@@ -1887,9 +1986,71 @@ async function seedThesisTracks() {
         description: t.description,
         sortOrder: i + 1,
         status: "published",
-        steps: { create: t.steps.map(([title, body], j) => ({ title, body, sortOrder: j + 1 })) },
+        steps: {
+          create: t.steps.map(([title, body], j) => ({
+            title,
+            body,
+            sortOrder: j + 1,
+          })),
+        },
       },
     });
+  }
+}
+
+async function seedRepositoryArticles() {
+  if ((await db.repositoryArticle.count()) > 0) return;
+  const articles = [
+    {
+      slug: "tipologi-arsitektur-kaili-di-lembah-palu",
+      title: "Tipologi Arsitektur Vernakular Kaili dan Ketahanannya terhadap Gempa di Lembah Palu",
+      authors: "Dr. Ir. Sarah Wijaya, M.T., Ahmad Fauzi, S.T., M.T.",
+      year: 2025,
+      category: "Jurnal Ilmiah",
+      abstract:
+        "Penelitian ini mengkaji struktur konstruksi dan adaptasi bentuk rumah tradisional Suku Kaili (Souraja) dalam merespon gaya seismik di sesar Palu Koro. Temuan menunjukkan sambungan pasak kayu dan struktur panggung memiliki fleksibilitas tinggi terhadap simpangan lateral tanah.",
+      body: "<p>Kajian mendalam terhadap peninggalan arsitektur lokal suku Kaili di Sulawesi Tengah membuktikan bahwa kearifan lokal telah mengantisipasi siklus gempa bumi berkala. Menggunakan simulasi elemen hingga dan pemindaian 3D pada Souraja di Palu, didapatkan pola transfer beban lateral yang sangat efisien.</p>",
+      status: "published" as const,
+      driveLinks: [
+        {
+          title: "Naskah Lengkap Full Paper (PDF)",
+          url: "https://drive.google.com/file/d/1example-full-paper-kaili/view?usp=sharing",
+        },
+        {
+          title: "Lampiran Gambar Kerja & Detail Sambungan CAD",
+          url: "https://drive.google.com/file/d/1example-cad-drawings/view?usp=sharing",
+        },
+        {
+          title: "Dataset Pengukuran Seismik & Dokumentasi Lapangan",
+          url: "https://drive.google.com/drive/folders/1example-dataset-folder?usp=sharing",
+        },
+      ],
+    },
+    {
+      slug: "evaluasi-kenyamanan-termal-ruang-kuliah-tropis",
+      title: "Evaluasi Kenyamanan Termal dan Ventilasi Alami pada Gedung Kuliah Arsitektur UNTAD",
+      authors: "Herianto, S.T., M.Sc., Maya Sari, S.T., M.T.",
+      year: 2024,
+      category: "Prosiding Seminar",
+      abstract:
+        "Analisis performa ventilasi silang dan pengaruh selubung bangunan terhadap temperatur operatif ruang studio perancangan, menghasilkan rekomendasi orientasi bukaan dan pembayang matahari (sun-shading devices).",
+      body: "<p>Penelitian ini mengukur laju aliran udara dan suhu ruangan selama 6 bulan di studio arsitektur UNTAD. Rekomendasi desain pasif mampu menurunkan konsumsi energi pendinginan hingga 28%.</p>",
+      status: "published" as const,
+      driveLinks: [
+        {
+          title: "Dokumen Prosiding Seminar Nasional (PDF)",
+          url: "https://drive.google.com/file/d/1example-prosiding-termal/view?usp=sharing",
+        },
+        {
+          title: "Slide Presentasi & Simulasi CFD",
+          url: "https://drive.google.com/file/d/1example-slides-simulation/view?usp=sharing",
+        },
+      ],
+    },
+  ];
+
+  for (const a of articles) {
+    await db.repositoryArticle.create({ data: a });
   }
 }
 
@@ -1916,6 +2077,7 @@ async function main() {
   await seedTaxonomy();
   await seedNews(admin.id);
   await seedThesisTracks();
+  await seedRepositoryArticles();
   console.log("Seed selesai.");
 }
 

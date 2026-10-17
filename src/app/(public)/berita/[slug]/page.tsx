@@ -41,7 +41,7 @@ export default function BeritaDetailPage({ params }: PageProps<"/berita/[slug]">
   );
 }
 
-async function BeritaDetailContent({ params }: PageProps<"/berita/[slug]">) {
+async function BeritaDetailContent({ params }: { params: PageProps<"/berita/[slug]">["params"] }) {
   const n = await getNews((await params).slug);
   if (!n) notFound();
   const [others, neighbors] = await Promise.all([listLatestNews(3, n.id), n.publishedAt ? getNewsNeighbors(n.id, n.publishedAt) : null]);

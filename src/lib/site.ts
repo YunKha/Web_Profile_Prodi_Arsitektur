@@ -18,6 +18,7 @@ export const akademikTabs: NavLink[] = [
   { label: "Kurikulum", href: "/akademik/kurikulum" },
   { label: "RPS", href: "/akademik/rps" },
   { label: "Panduan Tugas Akhir", href: "/akademik/panduan-ta" },
+  { label: "Repository", href: "/repository" },
 ];
 
 export const mahasiswaTabs: NavLink[] = [

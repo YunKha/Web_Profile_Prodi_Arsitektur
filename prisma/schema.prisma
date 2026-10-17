@@ -157,6 +157,7 @@ model Media {
   research             Research[]
   researchImages       ResearchImage[]
   researchFiles        ResearchFile[]
+  repositoryArticles   RepositoryArticle[]
 
   @@map("media")
 }
@@ -790,4 +791,31 @@ model NewsTag {
 
   @@id([newsId, tagId])
   @@map("news_tags")
+}
+
+// ───────────────────────── Repositori Artikel & Berkas ─────────────────────────
+
+/// Artikel repositori karya ilmiah/publikasi/arsip dengan banyak tautan Google Drive.
+model RepositoryArticle {
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique @db.VarChar(220)
+  title       String        @db.VarChar(400)
+  authors     String?       @db.VarChar(300)
+  year        Int?          @db.SmallInt
+  category    String?       @db.VarChar(100)
+  abstract    String?       @db.Text
+  body        String?       @db.LongText
+  driveLinks  Json?         @map("drive_links")
+  coverId     Int?          @map("cover_id")
+  status      ContentStatus @default(draft)
+  viewCount   Int           @default(0) @map("view_count")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  cover Media? @relation(fields: [coverId], references: [id], onDelete: SetNull)
+
+  @@index([status, year])
+  @@index([status, category])
+  @@fulltext([title])
+  @@map("repository_articles")
 }

@@ -43,6 +43,7 @@ export const defaultSettings: SiteSettings = {
       { label: "Kalender Akademik", url: "#" },
       { label: "Sistem Informasi Akademik", url: "https://siakad.untad.ac.id" },
       { label: "Pedoman Tugas Akhir", url: "/akademik/panduan-ta" },
+      { label: "Repositori Artikel", url: "/repository" },
       { label: "Jurnal Ruang & Rancang", url: "#" },
     ],
     serviceLinks: [
