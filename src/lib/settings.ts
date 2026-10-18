@@ -27,10 +27,10 @@ export type SettingKey = (typeof settingKeys)[number];
 export const defaultSettings: SiteSettings = {
   contact: {
     address:
-      "Gedung Fakultas Teknik, Universitas Tadulako\nJl. Soekarno Hatta KM. 9, Tondo, Palu, Sulawesi Tengah 94148",
+      "Gedung Jurusan Arsitektur, Universitas Tadulako\nJl. Soekarno Hatta KM. 9, Tondo, Palu, Sulawesi Tengah 94148",
     email: "arsitektur@untad.ac.id",
     phone: "+62 (451) 422611 Ext. 123",
-    mapUrl: "https://maps.google.com/?q=Fakultas+Teknik+Universitas+Tadulako",
+    mapUrl: "https://maps.google.com/?q=Jurusan+Teknik+Arsitektur+Untad",
   },
   social: { twitter: "", instagram: "", youtube: "" },
   stats: { foundedYear: 1998, studentCount: 450, alumniCount: 1200 },
@@ -40,16 +40,14 @@ export const defaultSettings: SiteSettings = {
     copyright: "© {year} Program Studi Arsitektur Universitas Tadulako. Seluruh hak cipta dilindungi.",
     academicLinks: [
       { label: "Kurikulum Arsitektur", url: "/akademik/kurikulum" },
-      { label: "Kalender Akademik", url: "#" },
       { label: "Sistem Informasi Akademik", url: "https://siakad.untad.ac.id" },
       { label: "Pedoman Tugas Akhir", url: "/akademik/panduan-ta" },
-      { label: "Jurnal Ruang & Rancang", url: "#" },
+      { label: "Ruang: Jurnal Arsitektur", url: "https://jurnalruang.arsitektur.fatek.untad.ac.id/index.php/JURNALRUANG" },
     ],
     serviceLinks: [
       { label: "Studio & Laboratorium", url: "/fasilitas" },
       { label: "Perpustakaan Referensi", url: "#" },
       { label: "Himpunan Mahasiswa (HIMAART)", url: "/mahasiswa/lembaga" },
-      { label: "Beasiswa", url: "#" },
       { label: "Layanan Konseling Akademik", url: "#" },
     ],
   },

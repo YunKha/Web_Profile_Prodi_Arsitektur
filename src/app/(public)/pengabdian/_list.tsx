@@ -21,8 +21,8 @@ export async function ServiceListPage({ kind, searchParams }: { kind: ServiceKin
   return (
     <>
       <PageHero
-        size="lg"
-        align="center"
+        size="md"
+        // align="center"
         eyebrow="Tridharma Perguruan Tinggi"
         title={hero?.title ?? "Pengabdian Kepada Masyarakat"}
         description={hero?.body}
@@ -31,7 +31,7 @@ export async function ServiceListPage({ kind, searchParams }: { kind: ServiceKin
       <SubNav items={pengabdianTabs} label="Navigasi pengabdian" />
 
       {intro ? (
-        <section className="py-20 lg:py-28">
+        <section className="py-16 lg:py-20">
           <Container className="grid items-center gap-14 lg:grid-cols-2 lg:gap-6">
             <div className="flex flex-col gap-6 lg:pr-16">
               <span className="h-1 w-16 bg-primary" aria-hidden />

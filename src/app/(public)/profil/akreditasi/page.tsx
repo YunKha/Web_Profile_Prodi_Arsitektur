@@ -26,7 +26,7 @@ export default async function AkreditasiPage() {
       </PageHero>
       <SubNav items={profilTabs} label="Navigasi profil" />
 
-      <section className="py-20 lg:py-28">
+      <section className="py-16 lg:py-20">
         <Container>
           {acc ? (
             <div className="grid items-start gap-12 lg:grid-cols-[466fr_662fr] lg:gap-6">

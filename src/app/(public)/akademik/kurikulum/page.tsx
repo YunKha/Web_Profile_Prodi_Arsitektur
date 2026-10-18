@@ -25,7 +25,7 @@ export default async function KurikulumPage() {
       <PageHero title={hero?.title ?? "Kurikulum"} description={hero?.body} image={hero?.image} />
       <SubNav items={akademikTabs} label="Navigasi akademik" />
 
-      <section className="py-20 lg:py-28">
+      <section className="py-16 lg:py-20">
         <Container className="grid items-center gap-14 lg:grid-cols-[466fr_662fr] lg:gap-6">
           <div className="flex flex-col gap-6">
             <Eyebrow>Struktur Pembelajaran</Eyebrow>

@@ -31,7 +31,7 @@ export default async function DosenStafPage({ searchParams }: PageProps<"/profil
     <>
       <PageHero title={hero?.title ?? "Dosen & Staf"} description={hero?.body} />
       <SubNav items={profilTabs} label="Navigasi profil" />
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-20">
         <Container className="flex flex-col gap-10">
           <Suspense fallback={<GridSkeleton />}>
             <LecturerList searchParams={searchParams} title={intro?.title} description={intro?.body} />

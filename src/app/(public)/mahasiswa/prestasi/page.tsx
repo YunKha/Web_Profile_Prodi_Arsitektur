@@ -29,7 +29,7 @@ export default async function PrestasiPage({ searchParams }: PageProps<"/mahasis
     <>
       <PageHero title={hero?.title ?? "Prestasi Mahasiswa"} description={hero?.body} />
       <SubNav items={mahasiswaTabs} label="Navigasi kemahasiswaan" />
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-20">
         <Container>
           <Suspense fallback={<div className="h-[480px] animate-pulse rounded-2xl bg-grey-100" aria-busy="true" />}>
             <AchievementList searchParams={searchParams} />

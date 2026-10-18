@@ -21,10 +21,10 @@ export default async function FasilitasPage() {
 
   return (
     <>
-      <PageHero size="lg" title={hero?.title ?? "Fasilitas Kampus"} description={hero?.body} image={hero?.image} />
+      <PageHero size="md" title={hero?.title ?? "Fasilitas Kampus"} description={hero?.body} image={hero?.image} />
       <SubNav items={[{ label: "Semua Fasilitas", href: "/fasilitas" }, ...nav]} label="Navigasi fasilitas" />
 
-      <div className="py-20 lg:py-28">
+      <div className="py-16 lg:py-20">
         <Container className="flex flex-col gap-24 lg:gap-32">
           {facilities.length === 0 ? <EmptyState icon={<Building className="size-10" />} title="Belum ada data fasilitas" /> : null}
           {facilities.map((f, i) => (

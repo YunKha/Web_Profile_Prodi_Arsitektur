@@ -9,7 +9,7 @@ import { mahasiswaTabs } from "@/lib/site";
 export function MahasiswaHero({ hero, fallbackTitle }: { hero?: PageBlockData; fallbackTitle: string }) {
   return (
     <>
-      <PageHero title={hero?.title ?? fallbackTitle} description={hero?.body} image={hero?.image} size="lg" />
+      <PageHero title={hero?.title ?? fallbackTitle} description={hero?.body} image={hero?.image} size="md" />
       <SubNav items={mahasiswaTabs} label="Navigasi kemahasiswaan" />
     </>
   );
@@ -19,7 +19,7 @@ export function MahasiswaHero({ hero, fallbackTitle }: { hero?: PageBlockData; f
 export function IntroSplit({ block, eyebrow }: { block?: PageBlockData; eyebrow: string }) {
   if (!block) return null;
   return (
-    <section className="py-20 lg:py-28">
+    <section className="py-16 lg:py-20">
       <Container className="grid items-center gap-14 lg:grid-cols-[466fr_564fr] lg:gap-[122px]">
         <div className="flex flex-col gap-6">
           <Eyebrow>{eyebrow}</Eyebrow>

@@ -7,6 +7,7 @@ import { getPageBlocks, getSettings, getStats } from "@/lib/queries/common";
 import { listFeaturedAchievements, listHomePartners, listLatestNews } from "@/lib/queries/content";
 import { getLecturersByIds } from "@/lib/queries/people";
 import { siteFullName, siteUrl, mediaUrl } from "@/lib/site";
+import { AnimatedStat } from "@/components/ui/animated-stat";
 
 export default async function HomePage() {
   const [blocks, settings, stats, news, achievements, partners] = await Promise.all([
@@ -59,14 +60,14 @@ export default async function HomePage() {
           />
           <Container className="pb-32 pt-16 lg:pb-24 flex justify-center">
             <div className="flex max-w-4xl flex-col items-center text-center gap-5">
-              <p className="text-sm font-bold uppercase tracking-[0.3em] text-primary-200">{home.heroEyebrow}</p>
-              <h1 className="font-serif text-6xl font-bold tracking-tight text-center text-white drop-shadow-sm">
+              <p className="inline-flex rounded-full border border-white/30  px-4 py-2 text-sm font-bold uppercase tracking-[0.3em] text-primary-200 backdrop-blur-sm">{home.heroEyebrow}</p>
+              <h1 className="font-serif text-4xl font-bold tracking-tight text-center text-white drop-shadow-sm sm:text-5xl lg:text-6xl">
                 {hero?.title ?? "Membangun Generasi Arsitek yang Kreatif & Berkelanjutan"}
               </h1>
-              {hero?.body ? <p className="max-w-2xl pt-3 text-lg font-medium leading-7 text-grey-100 sm:text-xl">{hero.body}</p> : null}
+              {hero?.body ? <p className="max-w-2xl pt-2 text-lg font-medium leading-7 text-grey-100 sm:text-xl">{hero.body}</p> : null}
               <div className="flex flex-wrap justify-center gap-5 pt-7">
-                <LinkButton href="/profil" className="px-10 py-[18px] text-sm">
-                  Profil Prodi
+                <LinkButton href="/berita" className="px-10 py-[18px] text-sm">
+                  Jelajahi Berita
                 </LinkButton>
                 <LinkButton href="#kontak" variant="ghostLight" className="px-10 py-4 text-sm">
                   Hubungi Kami
@@ -80,10 +81,10 @@ export default async function HomePage() {
         <Container className="relative z-10 -mt-24 lg:-mt-16">
           <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
             {statCards.map((s) => (
-              <li key={s.label} className="flex flex-col items-start gap-3 rounded-2xl border border-line-warm bg-white p-4 shadow-[var(--shadow-card)] sm:flex-row sm:items-center sm:gap-5 sm:p-6 lg:p-8">
+              <li key={s.label} className="group flex flex-col items-start gap-3 rounded-2xl border border-line-warm bg-white p-4 shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 motion-reduce:transform-none motion-reduce:transition-none sm:flex-row sm:items-center sm:gap-5 sm:p-6 lg:p-8">
                 <Image src={s.icon} alt="" width={s.w} height={s.h} className="h-11 w-auto shrink-0 sm:h-auto" />
                 <div className="flex flex-col gap-1">
-                  <p className="font-display text-2xl font-black leading-none text-[#222] sm:text-3xl">{s.value}</p>
+                  <AnimatedStat value={s.value} className="font-display text-2xl font-black leading-none text-[#222] sm:text-3xl" />
                   <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted">{s.label}</p>
                 </div>
               </li>
@@ -93,10 +94,10 @@ export default async function HomePage() {
       </section>
 
       {/* Warta Arsitektur */}
-      <section className="bg-background pb-24 pt-20 lg:pt-28" aria-labelledby="warta">
+      <section className="bg-background pb-24 pt-20 lg:pt-28" aria-labelledby="kareba">
         <Container className="flex flex-col gap-12 lg:gap-16">
           <SectionHeading
-            title={<span id="warta">Warta Arsitektur</span>}
+            title={<span id="kareba">Kareba Arsitektur</span>}
             description="Ikuti kabar terbaru, inovasi, dan perkembangan penelitian terkini dari civitas akademika Jurusan Arsitektur Universitas Tadulako."
             action={
               <LinkButton href="/berita" variant="outline" className="self-start md:self-auto">
@@ -116,6 +117,48 @@ export default async function HomePage() {
         </Container>
       </section>
 
+      {/* Visi & masa depan */}
+      <section className="relative isolate flex min-h-[560px] items-center overflow-hidden py-28 lg:min-h-[660px]" aria-labelledby="visi-cta">
+        <MediaImage media={cta?.image} sizes="100vw" className="-z-20" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-[rgb(175_100_14/0.4)] backdrop-blur-[1px]" />
+        <Container className="flex flex-col items-center gap-6 text-center">
+          <p className="text-xs font-black uppercase tracking-[0.4em] text-[#ecdece]">Visi &amp; Masa Depan</p>
+          <h2 id="visi-cta" className="max-w-4xl font-display text-4xl font-black leading-[1] text-background sm:text-5xl lg:text-6xl">
+            {cta?.title ?? "Membangun Solusi Digital untuk Masa Depan yang Terhubung"}
+          </h2>
+          {cta?.body ? <p className="max-w-2xl text-lg font-medium leading-7 text-background sm:text-xl">{cta.body}</p> : null}
+          <LinkButton href="/profil#visi-misi" variant="light" className="mt-6 rounded-sm px-8 py-3 text-base">
+            Lihat Visi dan Misi
+          </LinkButton>
+        </Container>
+      </section>
+
+      {/* Galeri Karya & Prestasi */}
+      {achievements.length ? (
+        <section className="bg-background pb-28 pt-24" aria-labelledby="galeri">
+          <Container className="flex flex-col gap-16 lg:gap-20">
+            <SectionHeading
+              align="center"
+              title={<span id="galeri">Galeri Karya &amp; Prestasi</span>}
+              description="Rekaman jejak kreativitas mahasiswa dan pencapaian akademik terbaik dalam merespons tantangan desain kontemporer."
+            />
+            <div className="mx-auto grid w-full max-w-5xl gap-8 md:grid-cols-3 lg:gap-10">
+              {achievements.map((a, i) => (
+                <div key={a.slug} className="mx-auto w-full max-w-[280px] sm:max-w-sm">
+                  <ShowcaseCard item={a} highlight={i === 1} />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center">
+              <LinkButton href="/mahasiswa/prestasi" variant="outline">
+                Lihat Semua Prestasi
+              </LinkButton>
+            </div>
+          </Container>
+        </section>
+      ) : null}
+
+
       {/* Profil Pimpinan */}
       {leader || management.length ? (
         <section className="relative overflow-hidden bg-background py-24" aria-labelledby="pimpinan">
@@ -128,7 +171,7 @@ export default async function HomePage() {
             />
             {leader ? (
               <div className="grid items-center gap-16 lg:grid-cols-[453fr_635fr] lg:gap-16">
-                <div className="relative mx-auto w-full max-w-md">
+                <div className="relative mx-auto w-full sm:max-w-[280px]">
                   <div aria-hidden className="absolute -inset-6 -rotate-6 rounded-3xl bg-[rgb(231_225_216/0.5)] sm:-inset-10" />
                   <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border-8 border-background shadow-[0_25px_50px_0_rgb(0_0_0/0.25)]">
                     <MediaImage media={leader.photo} alt={lecturerDisplayName(leader)} sizes="(min-width: 1024px) 450px, 90vw" />
@@ -171,45 +214,6 @@ export default async function HomePage() {
           </Container>
         </section>
       ) : null}
-
-      {/* Galeri Karya & Prestasi */}
-      {achievements.length ? (
-        <section className="bg-background pb-28 pt-24" aria-labelledby="galeri">
-          <Container className="flex flex-col gap-16 lg:gap-20">
-            <SectionHeading
-              align="center"
-              title={<span id="galeri">Galeri Karya &amp; Prestasi</span>}
-              description="Rekaman jejak kreativitas mahasiswa dan pencapaian akademik terbaik dalam merespons tantangan desain kontemporer."
-            />
-            <div className="grid gap-8 md:grid-cols-3 lg:gap-10">
-              {achievements.map((a, i) => (
-                <ShowcaseCard key={a.slug} item={a} highlight={i === 1} />
-              ))}
-            </div>
-            <div className="flex justify-center">
-              <LinkButton href="/mahasiswa/prestasi" variant="outline">
-                Lihat Semua Prestasi
-              </LinkButton>
-            </div>
-          </Container>
-        </section>
-      ) : null}
-
-      {/* Visi & masa depan */}
-      <section className="relative isolate flex min-h-[560px] items-center overflow-hidden py-28 lg:min-h-[660px]" aria-labelledby="visi-cta">
-        <MediaImage media={cta?.image} sizes="100vw" className="-z-20" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-[rgb(175_100_14/0.4)] backdrop-blur-[1px]" />
-        <Container className="flex flex-col items-center gap-6 text-center">
-          <p className="text-xs font-black uppercase tracking-[0.4em] text-[#ecdece]">Visi &amp; Masa Depan</p>
-          <h2 id="visi-cta" className="max-w-4xl font-display text-4xl font-black leading-[1] text-background sm:text-5xl lg:text-6xl">
-            {cta?.title ?? "Membangun Solusi Digital untuk Masa Depan yang Terhubung."}
-          </h2>
-          {cta?.body ? <p className="max-w-2xl text-lg font-medium leading-7 text-background sm:text-xl">{cta.body}</p> : null}
-          <LinkButton href="/profil#visi-misi" variant="light" className="mt-6 rounded-sm px-12 py-5 text-base">
-            Lihat Visi dan Misi
-          </LinkButton>
-        </Container>
-      </section>
 
       {/* Mitra */}
       {partners.length ? (
