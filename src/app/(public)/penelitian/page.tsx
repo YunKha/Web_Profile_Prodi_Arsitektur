@@ -28,7 +28,7 @@ export default async function PenelitianPage({ searchParams }: PageProps<"/penel
       <PageHero title={hero?.title ?? "Penelitian"} description={hero?.body} image={hero?.image} breadcrumb={[{ label: "Penelitian" }]} />
 
       {featured ? (
-        <section id="unggulan" className="py-20 lg:py-24" aria-labelledby="unggulan-title">
+        <section id="unggulan" className="py-16 lg:py-20" aria-labelledby="unggulan-title">
           <Container className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
             <div className="relative aspect-[8/5] overflow-hidden rounded-2xl shadow-[0_25px_50px_-12px_rgb(0_0_0/0.25)]">
               <MediaImage media={featured.cover} sizes="(min-width: 1024px) 560px, 90vw" />

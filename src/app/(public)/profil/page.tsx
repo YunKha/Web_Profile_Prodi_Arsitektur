@@ -28,11 +28,11 @@ export default async function ProfilPage() {
 
   return (
     <>
-      <PageHero eyebrow="Tentang Kami" align="center" title={hero?.title ?? "Profil Program Studi"} image={hero?.image} />
+      <PageHero eyebrow="Tentang Kami" title={hero?.title ?? "Profil Program Studi"} image={hero?.image} />
       <SubNav items={profilTabs} label="Navigasi profil" />
 
       {/* Sejarah */}
-      <section className="relative overflow-hidden py-20 lg:py-32" aria-labelledby="sejarah">
+      <section className="relative overflow-hidden py-16 lg:py-20" aria-labelledby="sejarah">
         <div aria-hidden className="absolute -right-16 top-16 size-64 rounded-full bg-primary-100/60 blur-3xl" />
         <Container className="relative grid items-start gap-14 lg:grid-cols-[466fr_564fr] lg:gap-[122px]">
           <div className="relative mx-auto w-full max-w-[466px] p-[9px]">

@@ -8,6 +8,7 @@ import { Container, EmptyState } from "@/components/ui/primitives";
 import { getPageBlocks, getSettings, pageParam } from "@/lib/queries/common";
 import { listAlumni } from "@/lib/queries/people";
 import { MahasiswaHero } from "../_components";
+import { AnimatedStat } from "@/components/ui/animated-stat";
 
 export const metadata: Metadata = {
   title: "Alumni",
@@ -22,7 +23,7 @@ export default async function AlumniPage({ searchParams }: PageProps<"/mahasiswa
     <>
       <MahasiswaHero hero={hero} fallbackTitle="Alumni" />
 
-      <section className="py-20 lg:py-24" aria-labelledby="tracer">
+      <section className="py-16 lg:py-20" aria-labelledby="tracer">
         <Container className="flex flex-col gap-12">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="flex max-w-2xl flex-col gap-3">
@@ -37,7 +38,9 @@ export default async function AlumniPage({ searchParams }: PageProps<"/mahasiswa
             {settings.alumniStats.map((s) => (
               <div key={s.label} className="flex flex-col gap-3 rounded-2xl border border-line-warm bg-white p-8 shadow-[var(--shadow-card)]">
                 <span className="h-1 w-10 bg-primary" aria-hidden />
-                <dd className="font-display text-5xl font-black text-ink">{s.value}</dd>
+                <dd className="font-display text-5xl font-black text-ink">
+                  <AnimatedStat value={s.value} />
+                </dd>
                 <dt className="text-xs font-bold uppercase tracking-[0.12em] text-muted">{s.label}</dt>
               </div>
             ))}
