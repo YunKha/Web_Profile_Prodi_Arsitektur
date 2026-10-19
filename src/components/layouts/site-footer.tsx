@@ -63,7 +63,7 @@ export async function SiteFooter() {
               />
               <div>
                 <p className="text-base font-bold uppercase tracking-[0.025em] text-ink">
-                  Arsitektur
+                  S1 Arsitektur
                 </p>
                 <p className="text-xs text-ink-soft">Universitas Tadulako</p>
               </div>
@@ -128,7 +128,12 @@ export async function SiteFooter() {
               Hubungi Kami
             </h2>
             <address className="flex flex-col gap-4 not-italic">
-              <p className="flex gap-3 text-sm leading-6 text-ink-soft">
+              <a
+                href={contact.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex gap-3 text-sm leading-6 text-ink-soft transition-colors hover:text-primary"
+              >
                 <Image
                   src="/images/icons/contact-address.svg"
                   alt=""
@@ -137,7 +142,7 @@ export async function SiteFooter() {
                   className="mt-0.5 size-5 shrink-0"
                 />
                 <span className="whitespace-pre-line">{contact.address}</span>
-              </p>
+              </a>
               <a
                 href={`mailto:${contact.email}`}
                 className="flex items-center gap-3 text-sm text-ink-soft hover:text-primary"

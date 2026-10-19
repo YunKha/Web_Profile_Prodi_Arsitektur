@@ -46,7 +46,7 @@ export default async function PanduanTaPage() {
       </section>
       <SubNav items={akademikTabs} label="Navigasi akademik" />
 
-      <section className="py-20 lg:py-28" aria-labelledby="tahapan">
+      <section className="py-16 lg:py-20" aria-labelledby="tahapan">
         <Container className="flex flex-col gap-16">
           <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
             <h2 id="tahapan" className="font-display text-3xl font-black uppercase text-ink sm:text-4xl">

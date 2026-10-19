@@ -52,7 +52,7 @@ async function FasilitasDetailContent({ params }: { params: PageProps<"/fasilita
       />
       <SubNav items={[{ label: "Semua Fasilitas", href: "/fasilitas" }, ...nav]} label="Navigasi fasilitas" />
 
-      <section className="py-20 lg:py-28">
+      <section className="py-16 lg:py-20">
         <Container className="grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-6">

@@ -20,15 +20,19 @@ export default async function KerjaSamaPage() {
 
   return (
     <>
-      <PageHero title={hero?.title ?? "Kerja Sama"} description={hero?.body} />
-
-      <div className="py-20 lg:py-24">
-        <Container className="flex flex-col gap-20">
+      <section className="relative py-16 lg:py-24">
+        <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-96 bg-[url(/images/grid-pattern.svg)] bg-cover bg-top opacity-60" />
+        <Container className="flex flex-col gap-12">
+          <header className="flex flex-col gap-4">
+            <h1 className="font-display text-3xl font-black text-ink sm:text-4xl">{hero?.title ?? "Kerja Sama"}</h1>
+            {hero?.body ? <p className="max-w-3xl text-base leading-7 text-ink-soft">{hero.body}</p> : null}
+          </header>
+          <div className="flex flex-col gap-20">
           {partners.length === 0 ? <EmptyState icon={<Handshake className="size-10" />} title="Belum ada data kerja sama" /> : null}
 
           {groups.map((g) => (
             <section key={g} className="flex flex-col gap-8" aria-labelledby={`grup-${g}`}>
-              <h2 id={`grup-${g}`} className="font-display text-2xl font-black uppercase text-ink sm:text-3xl">
+              <h2 id={`grup-${g}`} className="font-display text-2xl font-semibold text-ink sm:text-2xl">
                 Mitra {g}
               </h2>
               <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 lg:gap-6">
@@ -60,7 +64,7 @@ export default async function KerjaSamaPage() {
 
           {partners.length ? (
             <section className="flex flex-col gap-6" aria-labelledby="rincian">
-              <h2 id="rincian" className="font-display text-2xl font-black uppercase text-ink sm:text-3xl">
+              <h2 id="rincian" className="font-display text-2xl font-black text-ink sm:text-3xl">
                 Rincian Kerja Sama
               </h2>
               <div className="overflow-x-auto rounded-2xl border border-line-warm bg-white">
@@ -95,8 +99,9 @@ export default async function KerjaSamaPage() {
               </div>
             </section>
           ) : null}
+          </div>
         </Container>
-      </div>
+      </section>
     </>
   );
 }

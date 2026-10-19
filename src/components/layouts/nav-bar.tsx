@@ -37,13 +37,16 @@ function NavBarUI({ items, pathname }: { items: NavItem[]; pathname: string }) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#e5e5e5] bg-white/95 shadow-[0_1px_2px_0_rgb(0_0_0/0.05)] backdrop-blur-[6px]">
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between gap-6 px-4 sm:px-8 lg:px-16">
+      <div className="mx-auto flex h-18 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-16">
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Beranda Arsitektur UNTAD">
           <Image src="/images/logo-untad.png" alt="" width={34} height={34} className="size-[34px] object-contain" preload />
-          <span className="font-display text-xl font-bold text-ink sm:text-2xl">S1 ARSITEKTUR UNTAD</span>
+          <span className="flex flex-col gap-0">
+            <span className="whitespace-nowrap text-sm font-bold tracking-[0.08em] sm:text-base">S1 ARSITEKTUR</span>
+            <span className="whitespace-nowrap text-[0.6rem] font-semibold tracking-[0.10em] text-ink-soft sm:text-xs">UNIVERSITAS TADULAKO</span>
+          </span>
         </Link>
 
-        <nav aria-label="Menu utama" className="hidden xl:block">
+        <nav aria-label="Menu utama" className="hidden lg:block">
           <ul className="flex items-center gap-5">
             {items.map((item) => {
               const active = isActive(pathname, item);
@@ -53,7 +56,7 @@ function NavBarUI({ items, pathname }: { items: NavItem[]; pathname: string }) {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cx(
-                      "relative flex items-center gap-1 whitespace-nowrap py-7 text-sm font-semibold uppercase tracking-[0.05em] transition-colors",
+                      "relative flex items-center gap-1 whitespace-nowrap py-7 text-xs font-semibold uppercase tracking-[0.05em] transition-colors",
                       active ? "text-primary" : "text-ink-soft hover:text-primary",
                     )}
                   >
@@ -95,7 +98,7 @@ function NavBarUI({ items, pathname }: { items: NavItem[]; pathname: string }) {
 
         <button
           type="button"
-          className="inline-flex size-11 items-center justify-center rounded-full text-ink hover:bg-background xl:hidden"
+          className="inline-flex size-11 items-center justify-center rounded-full text-ink hover:bg-background lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? "Tutup menu" : "Buka menu"}
@@ -109,7 +112,7 @@ function NavBarUI({ items, pathname }: { items: NavItem[]; pathname: string }) {
         <nav
           id="mobile-menu"
           aria-label="Menu utama"
-          className="fixed inset-x-0 bottom-0 top-20 overflow-y-auto border-t border-line bg-white px-4 pb-10 pt-4 sm:px-8 xl:hidden"
+          className="fixed inset-x-0 top-20 z-[60] max-h-[calc(100dvh-5rem)] overflow-y-auto border-t border-line bg-white px-4 pb-10 pt-4 sm:px-8 lg:hidden"
         >
           <ul className="flex flex-col">
             {items.map((item) => {
