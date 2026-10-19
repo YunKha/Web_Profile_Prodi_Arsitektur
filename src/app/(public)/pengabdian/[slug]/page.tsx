@@ -40,7 +40,7 @@ export default function PengabdianDetailPage({ params }: PageProps<"/pengabdian/
   );
 }
 
-async function PengabdianDetailContent({ params }: PageProps<"/pengabdian/[slug]">) {
+async function PengabdianDetailContent({ params }: { params: PageProps<"/pengabdian/[slug]">["params"] }) {
   const s = await getService((await params).slug);
   if (!s) notFound();
   const others = await listOtherServices(s.id, s.kind, 3);

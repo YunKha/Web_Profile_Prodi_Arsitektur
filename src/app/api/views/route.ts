@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db/client";
 
-const schema = z.object({ type: z.enum(["news", "research"]), id: z.number().int().positive() });
+const schema = z.object({ type: z.enum(["news", "research", "repository"]), id: z.number().int().positive() });
 
 /** Penghitung tayang. Tidak meng-invalidate cache: angka di kartu boleh tertinggal beberapa jam. */
 export async function POST(request: Request) {
@@ -10,6 +10,7 @@ export async function POST(request: Request) {
   const { type, id } = parsed.data;
   const where = { id, status: "published" as const };
   if (type === "news") await db.news.updateMany({ where, data: { viewCount: { increment: 1 } } });
-  else await db.research.updateMany({ where, data: { viewCount: { increment: 1 } } });
+  else if (type === "research") await db.research.updateMany({ where, data: { viewCount: { increment: 1 } } });
+  else await db.repositoryArticle.updateMany({ where, data: { viewCount: { increment: 1 } } });
   return new Response(null, { status: 204 });
 }

@@ -8,8 +8,12 @@ import { ChevronDown, Menu, X } from "lucide-react";
 import type { NavItem } from "@/lib/site";
 import { cx } from "@/components/ui/primitives";
 
-function isActive(pathname: string, match: string) {
-  return pathname === match || pathname.startsWith(`${match}/`);
+function isActive(pathname: string, item: NavItem) {
+  if (pathname === item.match || pathname.startsWith(`${item.match}/`)) return true;
+  if (item.children?.some((child) => pathname === child.href || pathname.startsWith(`${child.href}/`))) {
+    return true;
+  }
+  return false;
 }
 
 function NavBarUI({ items, pathname }: { items: NavItem[]; pathname: string }) {
@@ -45,7 +49,7 @@ function NavBarUI({ items, pathname }: { items: NavItem[]; pathname: string }) {
         <nav aria-label="Menu utama" className="hidden lg:block">
           <ul className="flex items-center gap-5">
             {items.map((item) => {
-              const active = isActive(pathname, item.match);
+              const active = isActive(pathname, item);
               return (
                 <li key={item.href} className="group relative">
                   <Link
@@ -112,7 +116,7 @@ function NavBarUI({ items, pathname }: { items: NavItem[]; pathname: string }) {
         >
           <ul className="flex flex-col">
             {items.map((item) => {
-              const active = isActive(pathname, item.match);
+              const active = isActive(pathname, item);
               const isOpen = expanded === item.href;
               return (
                 <li key={item.href} className="border-b border-line">

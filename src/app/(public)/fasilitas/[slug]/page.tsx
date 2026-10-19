@@ -35,7 +35,7 @@ export default function FasilitasDetailPage({ params }: PageProps<"/fasilitas/[s
   );
 }
 
-async function FasilitasDetailContent({ params }: PageProps<"/fasilitas/[slug]">) {
+async function FasilitasDetailContent({ params }: { params: PageProps<"/fasilitas/[slug]">["params"] }) {
   const { slug } = await params;
   const [f, nav] = await Promise.all([getFacility(slug), getFacilityNav()]);
   if (!f) notFound();

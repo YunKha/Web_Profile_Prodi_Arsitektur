@@ -155,6 +155,7 @@ export const pageRegistry: PageDef[] = [
   },
   { key: "kerja-sama", label: "Kerja Sama", path: "/kerja-sama", blocks: [hero(["title", "body"])] },
   { key: "berita", label: "Berita", path: "/berita", blocks: [hero(["title", "body"])] },
+  { key: "repository", label: "Repository Artikel", path: "/repository", blocks: [hero(["title", "body"])] },
   {
     key: "kebijakan-privasi",
     label: "Kebijakan Privasi",

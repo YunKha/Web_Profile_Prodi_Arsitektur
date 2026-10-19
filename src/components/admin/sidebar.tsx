@@ -12,6 +12,7 @@ import {
   ExternalLink,
   FileText,
   FlaskConical,
+  FolderArchive,
   FolderOpen,
   GraduationCap,
   Handshake,
@@ -46,6 +47,7 @@ export const adminNav: Group[] = [
       { href: "/admin/prestasi", label: "Prestasi", icon: Trophy },
       { href: "/admin/penelitian", label: "Penelitian", icon: FlaskConical },
       { href: "/admin/pengabdian", label: "Pengabdian", icon: HeartHandshake },
+      { href: "/admin/repository", label: "Repository", icon: FolderArchive },
     ],
   },
   {

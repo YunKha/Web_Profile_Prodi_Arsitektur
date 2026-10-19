@@ -42,6 +42,7 @@ export const defaultSettings: SiteSettings = {
       { label: "Kurikulum Arsitektur", url: "/akademik/kurikulum" },
       { label: "Sistem Informasi Akademik", url: "https://siakad.untad.ac.id" },
       { label: "Pedoman Tugas Akhir", url: "/akademik/panduan-ta" },
+      { label: "Repositori Artikel", url: "/repository" },
       { label: "Ruang: Jurnal Arsitektur", url: "https://jurnalruang.arsitektur.fatek.untad.ac.id/index.php/JURNALRUANG" },
     ],
     serviceLinks: [

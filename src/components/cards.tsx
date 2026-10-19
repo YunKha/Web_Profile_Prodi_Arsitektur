@@ -374,3 +374,104 @@ export function DocumentLink({
 export function excerptOf(text: string | null | undefined, max = 160) {
   return truncate(text, max);
 }
+
+// ───────────── Repositori Artikel ─────────────
+
+export type RepositoryCardData = {
+  slug: string;
+  title: string;
+  authors: string | null;
+  year: number | null;
+  category: string | null;
+  abstract: string | null;
+  driveLinks: { title: string; url: string }[];
+  cover: MediaRef | null;
+  viewCount: number;
+};
+
+export function RepositoryCard({
+  article,
+  headingLevel = "h3",
+}: {
+  article: RepositoryCardData;
+  headingLevel?: "h2" | "h3";
+}) {
+  const Heading = headingLevel;
+  const hasDrive = article.driveLinks.length > 0;
+
+  return (
+    <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-line-warm bg-white p-6 shadow-[var(--shadow-card)] transition hover:border-primary sm:p-7">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {article.category ? <Badge tone="brown">{article.category}</Badge> : null}
+            {article.year ? (
+              <span className="text-xs font-bold text-muted">Tahun {article.year}</span>
+            ) : null}
+          </div>
+          {hasDrive ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-100 px-2.5 py-1 text-[11px] font-bold text-primary">
+              <span className="size-1.5 rounded-full bg-primary" aria-hidden />
+              {article.driveLinks.length} berkas Drive
+            </span>
+          ) : null}
+        </div>
+
+        <Heading className="font-display text-xl font-bold leading-snug text-ink sm:text-2xl">
+          <Link
+            href={`/repository/${article.slug}`}
+            className="hover:text-primary after:absolute after:inset-0 after:content-[''] after:z-0"
+          >
+            {article.title}
+          </Link>
+        </Heading>
+
+        {article.authors ? (
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+            Oleh: <span className="text-ink">{article.authors}</span>
+          </p>
+        ) : null}
+
+        {article.abstract ? (
+          <p className="line-clamp-3 text-sm leading-relaxed text-ink-soft">
+            {article.abstract}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="mt-6 flex flex-col gap-3 border-t border-line-warm pt-4">
+        {hasDrive ? (
+          <div className="relative z-10 flex flex-wrap gap-2">
+            {article.driveLinks.slice(0, 2).map((link, idx) => (
+              <a
+                key={idx}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-line-warm bg-background px-3 py-1.5 text-xs font-semibold text-ink-soft transition hover:border-primary hover:text-primary"
+              >
+                <ArrowUpRight className="size-3.5 text-primary" aria-hidden />
+                <span className="max-w-[140px] truncate">{link.title || `Drive ${idx + 1}`}</span>
+              </a>
+            ))}
+            {article.driveLinks.length > 2 ? (
+              <Link
+                href={`/repository/${article.slug}`}
+                className="inline-flex items-center rounded-lg border border-dashed border-line-warm px-2 py-1.5 text-xs font-medium text-muted hover:text-primary"
+              >
+                +{article.driveLinks.length - 2} lagi
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div className="flex items-center justify-between text-xs text-muted">
+          <span>{formatCompact(article.viewCount)} kali dibaca</span>
+          <span className="inline-flex items-center gap-1 font-bold text-primary group-hover:translate-x-0.5 transition-transform">
+            Buka artikel <ArrowRight className="size-3.5" aria-hidden />
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}

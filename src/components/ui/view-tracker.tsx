@@ -4,8 +4,8 @@ import { useEffect } from "react";
 
 const EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24 jam
 
-/** Mencatat satu tayangan per sesi browser untuk berita/penelitian. */
-export function ViewTracker({ type, id }: { type: "news" | "research"; id: number }) {
+/** Mencatat satu tayangan per sesi browser untuk berita/penelitian/repository. */
+export function ViewTracker({ type, id }: { type: "news" | "research" | "repository"; id: number }) {
   useEffect(() => {
     const key = `abala:viewed:${type}:${id}`;
     
